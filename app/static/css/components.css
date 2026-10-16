@@ -194,6 +194,106 @@
   box-shadow: 0 0 0 3px rgba(115, 75, 109, 0.15);
 }
 
+.form-control.is-invalid {
+  border-color: var(--color-muted-coral);
+  background-color: #fff9f8;
+}
+
+.form-control.is-valid {
+  border-color: var(--color-forest-mint);
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .form-control {
+  padding-right: 44px;
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 8px;
+  font-size: 15px;
+  color: var(--color-secondary-text);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.btn-toggle-password:hover {
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+/* Password Strength Meter & Live Checklist */
+.password-strength-meter {
+  margin-top: 8px;
+}
+
+.strength-bar {
+  height: 4px;
+  width: 100%;
+  background-color: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.strength-fill.weak {
+  width: 25%;
+  background-color: var(--color-muted-coral);
+}
+
+.strength-fill.fair {
+  width: 50%;
+  background-color: #e5983b;
+}
+
+.strength-fill.good {
+  width: 75%;
+  background-color: #5b9b7d;
+}
+
+.strength-fill.strong {
+  width: 100%;
+  background-color: var(--color-forest-mint);
+}
+
+.strength-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 11px;
+  color: var(--color-muted);
+}
+
+.strength-checklist .rule-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.2s ease;
+}
+
+.strength-checklist .rule-item.valid {
+  color: var(--color-forest-mint);
+  font-weight: 600;
+}
+
 .form-error {
   color: var(--color-muted-coral);
   font-size: 12px;

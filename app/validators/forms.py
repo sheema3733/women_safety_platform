@@ -214,6 +214,40 @@ def validate_incident_report(data: dict) -> dict:
         "incident_date": incident_date
     }
 
+def validate_coordinates(lat_val, lng_val, required: bool = False) -> tuple:
+    """
+    Validates latitude and longitude values.
+    Returns (latitude: float | None, longitude: float | None, error_message: str | None).
+    """
+    if lat_val is None or str(lat_val).strip() == "":
+        if required:
+            return None, None, "Latitude coordinate is required."
+        lat = None
+    else:
+        try:
+            lat = float(lat_val)
+            if not (-90.0 <= lat <= 90.0):
+                return None, None, "Latitude must be between -90.0 and 90.0 degrees."
+        except (ValueError, TypeError):
+            return None, None, "Latitude must be a valid decimal number."
+
+    if lng_val is None or str(lng_val).strip() == "":
+        if required:
+            return None, None, "Longitude coordinate is required."
+        lng = None
+    else:
+        try:
+            lng = float(lng_val)
+            if not (-180.0 <= lng <= 180.0):
+                return None, None, "Longitude must be between -180.0 and 180.0 degrees."
+        except (ValueError, TypeError):
+            return None, None, "Longitude must be a valid decimal number."
+
+    if (lat is not None and lng is None) or (lat is None and lng is not None):
+        return None, None, "Both latitude and longitude must be provided together."
+
+    return lat, lng, None
+
 def validate_resource(data: dict) -> dict:
     errors = {}
     name = (data.get("name") or "").strip()
@@ -237,19 +271,9 @@ def validate_resource(data: dict) -> dict:
     if not demo_phone:
         errors["demo_phone"] = "Contact phone number is required."
 
-    latitude = None
-    longitude = None
-    if lat not in (None, ""):
-        try:
-            latitude = float(lat)
-        except ValueError:
-            errors["latitude"] = "Latitude must be a decimal number."
-
-    if lng not in (None, ""):
-        try:
-            longitude = float(lng)
-        except ValueError:
-            errors["longitude"] = "Longitude must be a decimal number."
+    latitude, longitude, coord_err = validate_coordinates(lat, lng, required=False)
+    if coord_err:
+        errors["coordinates"] = coord_err
 
     if errors:
         raise ValidationError(errors)

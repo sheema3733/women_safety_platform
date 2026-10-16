@@ -29,24 +29,33 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Priority</th>
-              <th>Full Name</th>
-              <th>Relationship</th>
-              <th>Phone Number</th>
-              <th>Trusted Status</th>
-              <th>Actions</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Full Name</th>
+              <th scope="col">Relationship</th>
+              <th scope="col">Emergency Dial</th>
+              <th scope="col">Trusted Status</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
             {% for c in contacts %}
             <tr>
-              <td><strong>#{{ c.priority_order }}</strong></td>
+              <td>
+                <span class="badge {% if c.priority_order == 1 %}badge-plum{% else %}badge-muted{% endif %}">
+                  #{{ c.priority_order }}{% if c.priority_order == 1 %} (Primary){% endif %}
+                </span>
+              </td>
               <td><strong>{{ c.name }}</strong></td>
               <td>{{ c.relationship }}</td>
               <td>
-                <a href="tel:{{ c.phone }}" style="color: var(--color-forest-mint); font-weight: 700;">
-                  📞 {{ c.phone }}
-                </a>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  <a href="tel:{{ c.phone }}" class="btn btn-outline btn-sm" style="color: var(--color-forest-mint); border-color: var(--color-forest-mint); font-weight: 700;">
+                    📞 {{ c.phone }}
+                  </a>
+                  <a href="sms:{{ c.phone }}?body=EMERGENCY! I need immediate help. Please contact me right away." class="btn btn-outline btn-sm" style="color: var(--color-primary); border-color: var(--color-border); font-size: 11px;">
+                    💬 SMS
+                  </a>
+                </div>
               </td>
               <td>
                 {% if c.is_trusted %}

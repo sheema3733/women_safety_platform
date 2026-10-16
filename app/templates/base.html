@@ -22,34 +22,34 @@
         <span>Women Safety</span>
       </a>
 
-      <button class="mobile-toggle" aria-label="Toggle navigation menu">☰</button>
+      <button class="mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="main-nav-links">☰</button>
 
       <nav>
-        <ul class="nav-links">
+        <ul class="nav-links" id="main-nav-links">
           {% if current_user %}
             {% if current_user.is_admin %}
-              <li><a href="{{ url_for('admin.dashboard') }}" class="nav-link">Admin Center</a></li>
-              <li><a href="{{ url_for('admin.users') }}" class="nav-link">Users</a></li>
-              <li><a href="{{ url_for('admin.sos_management') }}" class="nav-link">SOS Events</a></li>
-              <li><a href="{{ url_for('admin.incidents') }}" class="nav-link">Incidents</a></li>
-              <li><a href="{{ url_for('admin.resources') }}" class="nav-link">Resources</a></li>
-              <li><a href="{{ url_for('analytics.index') }}" class="nav-link">Analytics</a></li>
-              <li><a href="{{ url_for('reports.index') }}" class="nav-link">Reports</a></li>
-              <li><a href="{{ url_for('admin.audit_logs') }}" class="nav-link">Audit</a></li>
+              <li><a href="{{ url_for('admin.dashboard') }}" class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}">Admin Center</a></li>
+              <li><a href="{{ url_for('admin.users') }}" class="nav-link {% if request.endpoint == 'admin.users' %}active{% endif %}">Users</a></li>
+              <li><a href="{{ url_for('admin.sos_management') }}" class="nav-link {% if 'admin.sos' in (request.endpoint or '') %}active{% endif %}">SOS Events</a></li>
+              <li><a href="{{ url_for('admin.incidents') }}" class="nav-link {% if 'admin.incident' in (request.endpoint or '') %}active{% endif %}">Incidents</a></li>
+              <li><a href="{{ url_for('admin.resources') }}" class="nav-link {% if 'admin.resource' in (request.endpoint or '') %}active{% endif %}">Resources</a></li>
+              <li><a href="{{ url_for('analytics.index') }}" class="nav-link {% if request.endpoint == 'analytics.index' %}active{% endif %}">Analytics</a></li>
+              <li><a href="{{ url_for('reports.index') }}" class="nav-link {% if request.endpoint == 'reports.index' %}active{% endif %}">Reports</a></li>
+              <li><a href="{{ url_for('admin.audit_logs') }}" class="nav-link {% if request.endpoint == 'admin.audit_logs' %}active{% endif %}">Audit</a></li>
             {% else %}
-              <li><a href="{{ url_for('user.dashboard') }}" class="nav-link">Dashboard</a></li>
-              <li><a href="{{ url_for('sos.center') }}" class="nav-link">SOS Center</a></li>
-              <li><a href="{{ url_for('contacts.index') }}" class="nav-link">Contacts</a></li>
-              <li><a href="{{ url_for('incidents.index') }}" class="nav-link">Incidents</a></li>
-              <li><a href="{{ url_for('checklist.index') }}" class="nav-link">Checklist</a></li>
-              <li><a href="{{ url_for('tips.index') }}" class="nav-link">Safety Tips</a></li>
-              <li><a href="{{ url_for('resources.index') }}" class="nav-link">Resources</a></li>
+              <li><a href="{{ url_for('user.dashboard') }}" class="nav-link {% if request.endpoint == 'user.dashboard' %}active{% endif %}">Dashboard</a></li>
+              <li><a href="{{ url_for('sos.center') }}" class="nav-link {% if 'sos.' in (request.endpoint or '') %}active{% endif %}">SOS Center</a></li>
+              <li><a href="{{ url_for('contacts.index') }}" class="nav-link {% if 'contacts.' in (request.endpoint or '') %}active{% endif %}">Contacts</a></li>
+              <li><a href="{{ url_for('incidents.index') }}" class="nav-link {% if 'incidents.' in (request.endpoint or '') %}active{% endif %}">Incidents</a></li>
+              <li><a href="{{ url_for('checklist.index') }}" class="nav-link {% if 'checklist.' in (request.endpoint or '') %}active{% endif %}">Checklist</a></li>
+              <li><a href="{{ url_for('tips.index') }}" class="nav-link {% if 'tips.' in (request.endpoint or '') %}active{% endif %}">Safety Tips</a></li>
+              <li><a href="{{ url_for('resources.index') }}" class="nav-link {% if 'resources.' in (request.endpoint or '') %}active{% endif %}">Resources</a></li>
             {% endif %}
           {% else %}
-            <li><a href="{{ url_for('main.index') }}" class="nav-link">Home</a></li>
-            <li><a href="{{ url_for('resources.index') }}" class="nav-link">Emergency Resources</a></li>
-            <li><a href="{{ url_for('tips.index') }}" class="nav-link">Safety Tips</a></li>
-            <li><a href="{{ url_for('main.about') }}" class="nav-link">About</a></li>
+            <li><a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">Home</a></li>
+            <li><a href="{{ url_for('resources.index') }}" class="nav-link {% if 'resources.' in (request.endpoint or '') %}active{% endif %}">Emergency Resources</a></li>
+            <li><a href="{{ url_for('tips.index') }}" class="nav-link {% if 'tips.' in (request.endpoint or '') %}active{% endif %}">Safety Tips</a></li>
+            <li><a href="{{ url_for('main.about') }}" class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}">About</a></li>
           {% endif %}
         </ul>
       </nav>

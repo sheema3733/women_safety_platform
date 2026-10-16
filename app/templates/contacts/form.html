@@ -14,26 +14,37 @@
 
         <div class="form-group">
           <label class="form-label" for="name">Contact Name</label>
-          <input type="text" id="name" name="name" class="form-control" value="{{ form_data.name or '' }}" required autofocus>
+          <input type="text" id="name" name="name" class="form-control {% if errors.name %}is-invalid{% endif %}" value="{{ form_data.name or '' }}" required autofocus {% if errors.name %}aria-describedby="name-error" aria-invalid="true"{% endif %}>
           {% if errors.name %}
-            <span class="form-error">{{ errors.name }}</span>
+            <span class="form-error" id="name-error">{{ errors.name }}</span>
           {% endif %}
         </div>
 
         <div class="form-group">
           <label class="form-label" for="relationship">Relationship</label>
-          <input type="text" id="relationship" name="relationship" class="form-control" value="{{ form_data.relationship or '' }}" placeholder="e.g. Mother, Sister, Roommate, Colleague" required>
+          <input type="text" id="relationship" name="relationship" class="form-control {% if errors.relationship %}is-invalid{% endif %}" value="{{ form_data.relationship or '' }}" placeholder="e.g. Mother, Sister, Roommate, Colleague" required {% if errors.relationship %}aria-describedby="relationship-error" aria-invalid="true"{% endif %}>
+          <div class="relationship-quick-tags" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+            <button type="button" class="btn-tag-pill" data-relation="Mother">Mother</button>
+            <button type="button" class="btn-tag-pill" data-relation="Sister">Sister</button>
+            <button type="button" class="btn-tag-pill" data-relation="Father">Father</button>
+            <button type="button" class="btn-tag-pill" data-relation="Brother">Brother</button>
+            <button type="button" class="btn-tag-pill" data-relation="Spouse / Partner">Partner</button>
+            <button type="button" class="btn-tag-pill" data-relation="Friend">Friend</button>
+            <button type="button" class="btn-tag-pill" data-relation="Roommate">Roommate</button>
+            <button type="button" class="btn-tag-pill" data-relation="Campus Security">Campus Security</button>
+          </div>
           {% if errors.relationship %}
-            <span class="form-error">{{ errors.relationship }}</span>
+            <span class="form-error" id="relationship-error">{{ errors.relationship }}</span>
           {% endif %}
         </div>
 
         <div class="form-group">
           <label class="form-label" for="phone">Phone Number (with country/area code)</label>
-          <input type="tel" id="phone" name="phone" class="form-control" value="{{ form_data.phone or '' }}" placeholder="+1 555-0199" required>
-          <span class="form-hint">Ensure this number is dialed without international roaming blockers.</span>
+          <input type="tel" id="phone" name="phone" class="form-control {% if errors.phone %}is-invalid{% endif %}" value="{{ form_data.phone or '' }}" placeholder="+1 555-0199" required aria-describedby="phone-hint {% if errors.phone %}phone-error{% endif %}" {% if errors.phone %}aria-invalid="true"{% endif %}>
+          <span class="form-hint" id="phone-hint">Enter digits with optional '+' and spaces/dashes (e.g. +1 555-0199 or 9876543210).</span>
+          <span class="form-hint" id="phone-format-status" style="display: none; font-weight: 600;"></span>
           {% if errors.phone %}
-            <span class="form-error">{{ errors.phone }}</span>
+            <span class="form-error" id="phone-error">{{ errors.phone }}</span>
           {% endif %}
         </div>
 

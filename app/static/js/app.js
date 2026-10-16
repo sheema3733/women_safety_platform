@@ -1,12 +1,28 @@
 // Core Application JavaScript for Women Safety Platform
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Mobile Nav Toggle
+  // Mobile Nav Toggle with Accessible Keyboard & Outside Click Handling
   const toggleBtn = document.querySelector(".mobile-toggle");
   const navLinks = document.querySelector(".nav-links");
   if (toggleBtn && navLinks) {
-    toggleBtn.addEventListener("click", () => {
-      navLinks.classList.toggle("open");
+    toggleBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = navLinks.classList.toggle("open");
+      toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (navLinks.classList.contains("open") && !navLinks.contains(e.target) && e.target !== toggleBtn) {
+        navLinks.classList.remove("open");
+        toggleBtn.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && navLinks.classList.contains("open")) {
+        navLinks.classList.remove("open");
+        toggleBtn.setAttribute("aria-expanded", "false");
+      }
     });
   }
 
@@ -142,6 +158,62 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   });
+
+  // Relationship Quick-Select Tags
+  document.querySelectorAll(".btn-tag-pill").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const relationInput = document.getElementById("relationship");
+      if (relationInput) {
+        relationInput.value = btn.getAttribute("data-relation");
+        relationInput.focus();
+        relationInput.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    });
+  });
+
+  // Client-Side Phone Number Format Live Feedback
+  const phoneInput = document.getElementById("phone");
+  const phoneStatus = document.getElementById("phone-format-status");
+  if (phoneInput && phoneStatus) {
+    const phoneRegex = /^\+?[0-9\s\-()]{7,25}$/;
+    phoneInput.addEventListener("input", () => {
+      const val = phoneInput.value.trim();
+      if (!val) {
+        phoneStatus.style.display = "none";
+        phoneInput.classList.remove("is-valid", "is-invalid");
+        return;
+      }
+      phoneStatus.style.display = "block";
+      if (phoneRegex.test(val)) {
+        phoneStatus.textContent = "✓ Valid phone format";
+        phoneStatus.style.color = "var(--color-forest-mint)";
+        phoneInput.classList.add("is-valid");
+        phoneInput.classList.remove("is-invalid");
+      } else {
+        phoneStatus.textContent = "✗ Invalid phone format (must be 7-25 digits/symbols)";
+        phoneStatus.style.color = "var(--color-muted-coral)";
+        phoneInput.classList.add("is-invalid");
+        phoneInput.classList.remove("is-valid");
+      }
+    });
+  }
+
+  // Copy Emergency Resource Details
+  const copyResourceBtn = document.getElementById("btn-copy-resource-info");
+  const copyResourceFeedback = document.getElementById("copy-resource-feedback");
+  if (copyResourceBtn) {
+    copyResourceBtn.addEventListener("click", () => {
+      const text = copyResourceBtn.getAttribute("data-copy-text");
+      if (text && navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+          if (copyResourceFeedback) {
+            copyResourceFeedback.style.display = "inline";
+            setTimeout(() => { copyResourceFeedback.style.display = "none"; }, 3000);
+          }
+        });
+      }
+    });
+  }
 });
 
 function openModal(id) {

@@ -26,14 +26,25 @@
       </div>
 
       <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Address & Region</h3>
-      <p style="font-size: 15px; color: var(--color-dark); margin-bottom: 20px;">
-        📍 {{ resource.general_area }}, {{ resource.city }}
+      <p style="font-size: 15px; color: var(--color-dark); margin-bottom: 12px;">
+        📍 <span id="resource-address-text">{{ resource.general_area }}, {{ resource.city }}</span>
       </p>
 
+      <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button type="button" id="btn-copy-resource-info" class="btn btn-outline btn-sm" data-copy-text="{{ resource.name }} - {{ resource.general_area }}, {{ resource.city }} (Tel: {{ resource.demo_phone }})">
+          📋 Copy Address & Contact
+        </button>
+        <span id="copy-resource-feedback" style="font-size: 12px; color: var(--color-forest-mint); font-weight: 700; align-self: center; display: none;">✓ Copied!</span>
+      </div>
+
       {% if resource.latitude and resource.longitude %}
-      <div style="padding: 12px 16px; background: var(--color-cream); border: 1px solid var(--color-border); border-radius: var(--radius-sm); margin-bottom: 24px; font-size: 13px;">
-        <strong>GPS Coordinates:</strong> {{ resource.latitude }}, {{ resource.longitude }}
-        <a href="https://maps.google.com/?q={{ resource.latitude }},{{ resource.longitude }}" target="_blank" rel="noopener" style="margin-left: 10px; font-weight: 600;">Open in External Maps ↗</a>
+      <div style="padding: 12px 16px; background: var(--color-cream); border: 1px solid var(--color-border); border-radius: var(--radius-sm); margin-bottom: 24px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <strong>GPS Coordinates:</strong> {{ resource.latitude }}, {{ resource.longitude }}
+        </div>
+        <a href="https://maps.google.com/?q={{ resource.latitude }},{{ resource.longitude }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="font-weight: 600;">
+          🗺️ Get Directions in Maps ↗
+        </a>
       </div>
       {% endif %}
 

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit Resource' if is_edit else 'Add Emergency Resource' }} | Admin{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 650px;">
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">{{ 'Edit Emergency Resource' if is_edit else 'Add New Emergency Resource' }}</h1>
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('admin.resource_edit', resource_id=resource.id) if is_edit else url_for('admin.resource_create') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+          <label class="form-label" for="name">Resource / Facility Name</label>
+          <input type="text" id="name" name="name" class="form-control" value="{{ form_data.name or '' }}" required autofocus>
+          {% if errors.name %}
+            <span class="form-error">{{ errors.name }}</span>
+          {% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="category">Category</label>
+            <select id="category" name="category" class="form-select" required>
+              <option value="">-- Select Category --</option>
+              {% for cat in categories %}
+                <option value="{{ cat }}" {% if form_data.category == cat %}selected{% endif %}>{{ cat }}</option>
+              {% endfor %}
+            </select>
+            {% if errors.category %}
+              <span class="form-error">{{ errors.category }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="city">City</label>
+            <input type="text" id="city" name="city" class="form-control" value="{{ form_data.city or '' }}" required>
+            {% if errors.city %}
+              <span class="form-error">{{ errors.city }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="general_area">General Area / Address</label>
+          <input type="text" id="general_area" name="general_area" class="form-control" value="{{ form_data.general_area or '' }}" placeholder="e.g. 45 Downtown Blvd, Sector 3" required>
+          {% if errors.general_area %}
+            <span class="form-error">{{ errors.general_area }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="demo_phone">Emergency Contact Phone</label>
+          <input type="tel" id="demo_phone" name="demo_phone" class="form-control" value="{{ form_data.demo_phone or '' }}" placeholder="+1 555-0100" required>
+          {% if errors.demo_phone %}
+            <span class="form-error">{{ errors.demo_phone }}</span>
+          {% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="latitude">Latitude (Decimal)</label>
+            <input type="text" id="latitude" name="latitude" class="form-control" value="{{ form_data.latitude or '' }}" placeholder="e.g. 40.7128">
+            {% if errors.latitude %}
+              <span class="form-error">{{ errors.latitude }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="longitude">Longitude (Decimal)</label>
+            <input type="text" id="longitude" name="longitude" class="form-control" value="{{ form_data.longitude or '' }}" placeholder="e.g. -74.0060">
+            {% if errors.longitude %}
+              <span class="form-error">{{ errors.longitude }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Services & Description</label>
+          <textarea id="description" name="description" class="form-control" rows="3" placeholder="Hours of operation, women's cell availability, legal or medical aid...">{{ form_data.description or '' }}</textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" name="is_active" value="1" {% if form_data.is_active %}checked{% endif %}>
+            <span style="font-weight: 600;">Active in Emergency Directory</span>
+          </label>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+          <button type="submit" class="btn btn-primary btn-lg">{{ 'Update Resource' if is_edit else 'Save Resource' }}</button>
+          <a href="{{ url_for('admin.resources') }}" class="btn btn-outline btn-lg">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}Activity & Safety History | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Activity & Safety History</h1>
+    <p class="dashboard-subtitle">A transparent timeline of your emergency events, incident reports, and account actions</p>
+  </div>
+
+  <div class="dashboard-layout">
+    <div>
+      <!-- SOS Events History -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">SOS Emergency History</h2>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          {% if sos_events %}
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Event ID</th>
+                  <th>Status</th>
+                  <th>Triggered</th>
+                  <th>Resolved</th>
+                  <th>Resolution Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in sos_events %}
+                <tr>
+                  <td><strong>#{{ s.id }}</strong></td>
+                  <td>{{ macros.status_badge(s.status) }}</td>
+                  <td>{{ s.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                  <td>{{ s.resolved_at.strftime('%Y-%m-%d %H:%M') if s.resolved_at else 'Active' }}</td>
+                  <td>{{ s.resolution_notes or s.address_note or 'Standard activation' }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            {{ macros.empty_state("🛡️", "No previous SOS events", "You have not recorded any emergency activations.") }}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Incident Reports History -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Incident Reports History</h2>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          {% if incidents %}
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Report ID</th>
+                  <th>Type</th>
+                  <th>Area</th>
+                  <th>Status</th>
+                  <th>Resolution Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inc in incidents %}
+                <tr>
+                  <td>#{{ inc.id }}</td>
+                  <td><strong>{{ inc.incident_type }}</strong></td>
+                  <td>{{ inc.general_area }}</td>
+                  <td>{{ macros.status_badge(inc.status) }}</td>
+                  <td>{{ inc.resolution_notes or 'Under review by admin' }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            {{ macros.empty_state("📝", "No incidents on record", "You have not submitted any incident reports.") }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side: Account Audit Trail -->
+    <div>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Account Activity Trail</h2>
+        </div>
+        <div class="card-body" style="padding: 12px 18px;">
+          {% if activities %}
+            {% for act in activities %}
+            <div style="padding: 12px 0; border-bottom: 1px solid var(--color-border); font-size: 13px;">
+              <strong style="color: var(--color-dark);">{{ act.action }}</strong>
+              <p style="color: var(--color-secondary-text); margin: 3px 0;">{{ act.details }}</p>
+              <span style="font-size: 11px; color: var(--color-muted);">{{ act.created_at.strftime('%b %d, %Y at %H:%M:%S') }}</span>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p style="font-size: 13px; color: var(--color-muted);">No activity recorded.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

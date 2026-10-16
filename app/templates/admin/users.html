@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}User Management | Admin Control{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 class="dashboard-title">User Account Management</h1>
+      <p class="dashboard-subtitle">Monitor accounts, verify active status, and maintain security permissions</p>
+    </div>
+    <span class="badge badge-plum">{{ total }} Registered Users</span>
+  </div>
+
+  <!-- Search and Filters -->
+  <form action="{{ url_for('admin.users') }}" method="GET" class="filter-bar">
+    <input type="text" name="q" class="form-control search-input" placeholder="Search by user name, email, or city..." value="{{ search }}">
+
+    <select name="role" class="form-select" style="max-width: 160px;">
+      <option value="">All Roles</option>
+      <option value="USER" {% if role_filter == 'USER' %}selected{% endif %}>USER</option>
+      <option value="ADMIN" {% if role_filter == 'ADMIN' %}selected{% endif %}>ADMIN</option>
+    </select>
+
+    <select name="status" class="form-select" style="max-width: 160px;">
+      <option value="">All Statuses</option>
+      <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+      <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <button type="submit" class="btn btn-outline">Filter</button>
+    {% if search or role_filter or status_filter %}
+      <a href="{{ url_for('admin.users') }}" class="btn btn-outline" style="color: var(--color-muted);">Reset</a>
+    {% endif %}
+  </form>
+
+  <div class="card">
+    <div class="card-body" style="padding: 0;">
+      {% if users %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Email Address</th>
+              <th>Phone</th>
+              <th>City / Area</th>
+              <th>Role</th>
+              <th>Account Status</th>
+              <th>Joined Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td>#{{ u.id }}</td>
+              <td><strong>{{ u.full_name }}</strong></td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.phone or 'Not set' }}</td>
+              <td>{{ u.city or 'Not set' }}</td>
+              <td>
+                <span class="badge badge-{% if u.is_admin %}coral{% else %}plum{% endif %}">
+                  {{ u.role.name }}
+                </span>
+              </td>
+              <td>
+                {% if u.is_active %}
+                  <span class="badge badge-forest">Active</span>
+                {% else %}
+                  <span class="badge badge-coral">Disabled</span>
+                {% endif %}
+              </td>
+              <td>{{ u.created_at.strftime('%b %d, %Y') }}</td>
+              <td>
+                {% if u.id != current_user.id %}
+                <form action="{{ url_for('admin.toggle_user_status', user_id=u.id) }}" method="POST" onsubmit="return confirm('Toggle status for user {{ u.email }}?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-outline btn-sm" style="{% if u.is_active %}color: var(--color-muted-coral);{% else %}color: var(--color-forest-mint);{% endif %}">
+                    {{ 'Deactivate' if u.is_active else 'Activate' }}
+                  </button>
+                </form>
+                {% else %}
+                  <span style="font-size: 12px; color: var(--color-muted);">Current User</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 16px;">
+        {{ macros.pagination(total, page, per_page, 'admin.users', q=search, role=role_filter, status=status_filter) }}
+      </div>
+      {% else %}
+        {{ macros.empty_state("👥", "No users found", "No user records match your filter criteria.") }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

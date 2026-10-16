@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}401 - Unauthorized | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; text-align: center; padding: 60px 20px;">
+  <div style="font-size: 64px; color: var(--color-primary); margin-bottom: 12px;">🔒</div>
+  <h1 style="font-size: 28px; font-weight: 800; color: var(--color-dark); margin-bottom: 12px;">Authentication Required (401)</h1>
+  <p style="color: var(--color-secondary-text); font-size: 15px; margin-bottom: 24px;">
+    You must be signed in with an active account to access this emergency preparedness feature.
+  </p>
+  <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Sign In to Continue</a>
+</div>
+{% endblock %}

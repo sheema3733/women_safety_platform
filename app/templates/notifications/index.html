@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}Notifications | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 class="dashboard-title">System Alerts & Notifications</h1>
+      <p class="dashboard-subtitle">Emergency updates, incident reviews, safety recommendations, and account alerts</p>
+    </div>
+    {% if unread_count > 0 %}
+    <form action="{{ url_for('notifications.mark_all_read') }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-outline btn-sm">Mark All as Read ({{ unread_count }})</button>
+    </form>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-body" style="padding: 0;">
+      {% if notifications %}
+      <div style="display: flex; flex-direction: column;">
+        {% for n in notifications %}
+        <div style="padding: 18px 24px; border-bottom: 1px solid var(--color-border); background: {% if not n.is_read %}#fdfbfd{% else %}#ffffff{% endif %}; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">
+          <div style="flex: 1;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+              <span class="badge badge-{% if 'SOS' in n.notification_type %}coral{% elif 'Incident' in n.notification_type %}plum{% else %}forest{% endif %}" style="font-size: 11px;">
+                {{ n.notification_type }}
+              </span>
+              <strong style="font-size: 15px; color: var(--color-dark);">{{ n.title }}</strong>
+              {% if not n.is_read %}
+                <span class="badge badge-coral badge-unread" style="font-size: 10px;">Unread</span>
+              {% endif %}
+            </div>
+            <p style="font-size: 14px; color: var(--color-secondary-text); margin: 6px 0 10px;">{{ n.message }}</p>
+            <div style="display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--color-muted);">
+              <span>📅 {{ n.created_at.strftime('%b %d, %Y at %H:%M') }}</span>
+              {% if n.link_url %}
+                <a href="{{ n.link_url }}" style="color: var(--color-primary); font-weight: 600;">View Details →</a>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if not n.is_read %}
+          <form action="{{ url_for('notifications.mark_read', notification_id=n.id) }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline btn-sm" title="Mark as read">✓</button>
+          </form>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      <div style="padding: 16px;">
+        {{ macros.pagination(total, page, per_page, 'notifications.index', unread=unread_only) }}
+      </div>
+      {% else %}
+        {{ macros.empty_state("🔔", "No notifications", "You have no new or unread notifications at this time.") }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

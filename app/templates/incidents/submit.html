@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Report a Safety Incident | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 680px;">
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">Report a Safety Incident</h1>
+    </div>
+    <div class="card-body">
+      <p style="font-size: 14px; color: var(--color-secondary-text); margin-bottom: 24px;">
+        Submit details regarding an unsafe occurrence, harassment, or infrastructure concern. Incident reports are privately reviewed by administrators for investigation and community alert updates.
+      </p>
+
+      {% if errors.general %}
+        <div class="alert alert-danger">{{ errors.general }}</div>
+      {% endif %}
+
+      <form action="{{ url_for('incidents.submit') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+          <label class="form-label" for="incident_type">Incident Category</label>
+          <select id="incident_type" name="incident_type" class="form-select" required>
+            <option value="">-- Select Incident Category --</option>
+            {% for t in incident_types %}
+              <option value="{{ t }}" {% if form_data.incident_type == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+          </select>
+          {% if errors.incident_type %}
+            <span class="form-error">{{ errors.incident_type }}</span>
+          {% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="incident_date">Date of Occurrence</label>
+            <input type="date" id="incident_date" name="incident_date" class="form-control" value="{{ form_data.incident_date or '' }}" required>
+            {% if errors.incident_date %}
+              <span class="form-error">{{ errors.incident_date }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="severity">Perceived Severity</label>
+            <select id="severity" name="severity" class="form-select" required>
+              {% for s in severities %}
+                <option value="{{ s }}" {% if (form_data.severity or 'MEDIUM') == s %}selected{% endif %}>{{ s }}</option>
+              {% endfor %}
+            </select>
+            {% if errors.severity %}
+              <span class="form-error">{{ errors.severity }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="general_area">Location / Street / Area</label>
+          <input type="text" id="general_area" name="general_area" class="form-control" placeholder="e.g. Bus stop on 5th Avenue, Metro Platform 2, West District Park" value="{{ form_data.general_area or '' }}" required>
+          {% if errors.general_area %}
+            <span class="form-error">{{ errors.general_area }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Detailed Description of Incident</label>
+          <textarea id="description" name="description" class="form-control" rows="5" placeholder="Provide factual details regarding what happened, descriptions of individuals involved, lighting conditions, or vehicle numbers if safe to record." required>{{ form_data.description or '' }}</textarea>
+          <span class="form-hint">At least 10 characters. Avoid entering sensitive passwords or payment details.</span>
+          {% if errors.description %}
+            <span class="form-error">{{ errors.description }}</span>
+          {% endif %}
+        </div>
+
+        <div class="disclaimer-banner" style="margin-top: 20px;">
+          <p><strong>Note:</strong> Filing a report here logs the incident internally within the platform. If you require urgent on-scene intervention, call local emergency police.</p>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+          <button type="submit" class="btn btn-primary btn-lg">Submit Incident Report</button>
+          <a href="{{ url_for('incidents.index') }}" class="btn btn-outline btn-lg">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

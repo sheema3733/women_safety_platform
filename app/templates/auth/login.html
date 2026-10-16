@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 480px;">
+  <div class="card">
+    <div class="card-header" style="text-align: center; display: block;">
+      <h2 class="card-title" style="font-size: 22px;">Sign In to Your Account</h2>
+      <p style="font-size: 13px; color: var(--color-secondary-text); margin-top: 4px;">Access your personal safety dashboard and emergency tools</p>
+    </div>
+    <div class="card-body">
+      {% if errors.general %}
+        <div class="alert alert-danger">
+          <span>⚠️</span>
+          <span>{{ errors.general }}</span>
+        </div>
+      {% endif %}
+
+      <form action="{{ url_for('auth.login', next=request.args.get('next')) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input type="email" id="email" name="email" class="form-control" value="{{ form_data.email or '' }}" required autofocus autocomplete="email">
+          {% if errors.email %}
+            <span class="form-error">{{ errors.email }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input type="password" id="password" name="password" class="form-control" required autocomplete="current-password">
+          {% if errors.password %}
+            <span class="form-error">{{ errors.password }}</span>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 24px;">Sign In</button>
+      </form>
+
+      <!-- Demo Accounts Box -->
+      <div style="margin-top: 24px; padding: 14px; background: var(--color-cream); border-radius: var(--radius-sm); border: 1px dashed var(--color-border); font-size: 12px;">
+        <strong style="color: var(--color-primary); display: block; margin-bottom: 6px;">Demo Accounts:</strong>
+        <div><strong>Admin:</strong> admin@womensafety.org / Admin@12345</div>
+        <div style="margin-top: 2px;"><strong>User:</strong> user@womensafety.org / User@12345</div>
+      </div>
+    </div>
+    <div class="card-footer" style="text-align: center; font-size: 14px;">
+      Don't have an account? <a href="{{ url_for('auth.register') }}" style="font-weight: 700;">Create one now</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

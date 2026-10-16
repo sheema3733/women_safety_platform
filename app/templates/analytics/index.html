@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}Platform Analytics | Women Safety Platform{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js for data visualization -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 class="dashboard-title">Platform Intelligence & Analytics</h1>
+      <p class="dashboard-subtitle">Data-driven insights on emergency incidents, SOS trends, and preparedness metrics</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <a href="{{ url_for('reports.index') }}" class="btn btn-outline">📑 View Export Reports</a>
+    </div>
+  </div>
+
+  <!-- Key Metrics Row -->
+  <div class="kpi-grid">
+    {{ macros.kpi_card("Total SOS Alerts", kpis.total_sos, "🚨", "coral") }}
+    {{ macros.kpi_card("Total Incidents", kpis.total_incidents, "📝", "plum") }}
+    {{ macros.kpi_card("Active Users", kpis.active_users, "👥", "mint") }}
+    {{ macros.kpi_card("Emergency Resources", kpis.total_resources, "🏥", "mint") }}
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="charts-grid">
+    <!-- SOS Distribution -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">SOS Alerts Status Distribution</h3>
+      </div>
+      <div class="card-body" style="height: 320px; display: flex; align-items: center; justify-content: center;">
+        <canvas id="chart-sos-status"></canvas>
+      </div>
+    </div>
+
+    <!-- Incident Categories -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Incidents by Category</h3>
+      </div>
+      <div class="card-body" style="height: 320px;">
+        <canvas id="chart-incident-category"></canvas>
+      </div>
+    </div>
+
+    <!-- Incident Severity -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Incidents Severity Breakdown</h3>
+      </div>
+      <div class="card-body" style="height: 320px; display: flex; align-items: center; justify-content: center;">
+        <canvas id="chart-incident-severity"></canvas>
+      </div>
+    </div>
+
+    <!-- Resources by Category -->
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Emergency Resources Registered</h3>
+      </div>
+      <div class="card-body" style="height: 320px;">
+        <canvas id="chart-resource-category"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    fetch("{{ url_for('analytics.data_endpoint') }}")
+      .then(res => res.json())
+      .then(data => {
+        initAnalyticsCharts(data);
+      })
+      .catch(err => console.error("Error loading analytics data:", err));
+  });
+</script>
+{% endblock %}

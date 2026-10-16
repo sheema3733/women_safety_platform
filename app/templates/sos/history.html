@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}Emergency SOS History | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 class="dashboard-title">Emergency SOS History</h1>
+      <p class="dashboard-subtitle">Complete record of emergency events and resolution outcomes</p>
+    </div>
+    <a href="{{ url_for('sos.center') }}" class="btn btn-coral">Emergency SOS Center</a>
+  </div>
+
+  <div class="disclaimer-banner">
+    <p><strong>Notice:</strong> {{ disclaimer }}</p>
+  </div>
+
+  <div class="card">
+    <div class="card-body" style="padding: 0;">
+      {% if events %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Status</th>
+              <th>Triggered At</th>
+              <th>Resolved At</th>
+              <th>Trigger Type</th>
+              <th>Location Note</th>
+              <th>Resolution Outcome</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ev in events %}
+            <tr>
+              <td><strong>#{{ ev.id }}</strong></td>
+              <td>{{ macros.status_badge(ev.status) }}</td>
+              <td>{{ ev.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+              <td>{{ ev.resolved_at.strftime('%Y-%m-%d %H:%M:%S') if ev.resolved_at else 'Active' }}</td>
+              <td><span class="badge badge-muted">{{ ev.trigger_type }}</span></td>
+              <td>{{ ev.address_note or 'Browser GPS' }}</td>
+              <td>{{ ev.resolution_notes or 'In Progress' }}</td>
+              <td>
+                {% if ev.is_active %}
+                  <a href="{{ url_for('sos.active_view', sos_id=ev.id) }}" class="btn btn-coral btn-sm">Command View</a>
+                {% else %}
+                  <span style="color: var(--color-muted); font-size: 13px;">Archived</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 16px;">
+        {{ macros.pagination(total, page, per_page, 'sos.history') }}
+      </div>
+      {% else %}
+        {{ macros.empty_state("🛡️", "No SOS events on record", "You have not recorded any emergency activations.") }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

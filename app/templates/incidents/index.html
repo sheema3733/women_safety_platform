@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}My Incident Reports | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 class="dashboard-title">My Safety Incident Reports</h1>
+      <p class="dashboard-subtitle">Confidential tracking and resolution status of safety incidents submitted by you</p>
+    </div>
+    <a href="{{ url_for('incidents.submit') }}" class="btn btn-primary">+ Report New Incident</a>
+  </div>
+
+  <!-- Search & Filter Bar -->
+  <form action="{{ url_for('incidents.index') }}" method="GET" class="filter-bar">
+    <input type="text" name="q" class="form-control search-input" placeholder="Search your reports by description or location..." value="{{ search }}">
+
+    <select name="type" class="form-select" style="max-width: 180px;">
+      <option value="">All Categories</option>
+      {% for t in incident_types %}
+        <option value="{{ t }}" {% if type_filter == t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="severity" class="form-select" style="max-width: 140px;">
+      <option value="">All Severities</option>
+      {% for s in severities %}
+        <option value="{{ s }}" {% if severity_filter == s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-outline">Filter</button>
+    {% if search or type_filter or severity_filter or status_filter %}
+      <a href="{{ url_for('incidents.index') }}" class="btn btn-outline" style="color: var(--color-muted);">Reset</a>
+    {% endif %}
+  </form>
+
+  <div class="card">
+    <div class="card-body" style="padding: 0;">
+      {% if reports %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Incident Type</th>
+              <th>Reported Date</th>
+              <th>Location Area</th>
+              <th>Severity</th>
+              <th>Status</th>
+              <th>Resolution Notes</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for inc in reports %}
+            <tr>
+              <td><strong>#{{ inc.id }}</strong></td>
+              <td><strong>{{ inc.incident_type }}</strong></td>
+              <td>{{ inc.incident_date.strftime('%b %d, %Y') }}</td>
+              <td>{{ inc.general_area }}</td>
+              <td>{{ macros.status_badge(inc.severity) }}</td>
+              <td>{{ macros.status_badge(inc.status) }}</td>
+              <td>{{ inc.resolution_notes or 'Pending review' }}</td>
+              <td>
+                <a href="{{ url_for('incidents.detail', incident_id=inc.id) }}" class="btn btn-outline btn-sm">View Details</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 16px;">
+        {{ macros.pagination(total, page, per_page, 'incidents.index', q=search, type=type_filter, severity=severity_filter) }}
+      </div>
+      {% else %}
+        {{ macros.empty_state("📝", "No incident reports found", "You have not submitted any incidents matching this criteria.", "Submit an Incident Report", url_for('incidents.submit')) }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

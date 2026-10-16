@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}Safety Education & Guides | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Safety Education & Practical Guides</h1>
+    <p class="dashboard-subtitle">Actionable protocols, situational awareness tactics, and preventative safety strategies</p>
+  </div>
+
+  <!-- Filter Bar -->
+  <form action="{{ url_for('tips.index') }}" method="GET" class="filter-bar">
+    <input type="text" name="q" class="form-control search-input" placeholder="Search safety topics, travel, privacy tips..." value="{{ search }}">
+
+    <select name="category" class="form-select" style="max-width: 220px;">
+      <option value="">All Safety Categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-outline">Filter</button>
+    {% if search or selected_category %}
+      <a href="{{ url_for('tips.index') }}" class="btn btn-outline" style="color: var(--color-muted);">Reset</a>
+    {% endif %}
+  </form>
+
+  {% if tips %}
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px;">
+    {% for tip in tips %}
+    <div class="card">
+      <div class="card-body" style="display: flex; flex-direction: column;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <span class="badge badge-forest">{{ tip.category }}</span>
+          {% if tip.id in viewed_ids %}
+            <span class="badge badge-muted" style="font-size: 10px;">✓ Read</span>
+          {% endif %}
+        </div>
+        <h3 style="font-size: 18px; font-weight: 700; color: var(--color-dark); margin-bottom: 8px;">{{ tip.title }}</h3>
+        <p style="font-size: 14px; color: var(--color-secondary-text); margin-bottom: 20px; flex: 1;">{{ tip.summary }}</p>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border); padding-top: 14px; font-size: 13px;">
+          <span style="color: var(--color-muted);">⏱️ {{ tip.read_time_minutes }} min read</span>
+          <a href="{{ url_for('tips.detail', tip_id=tip.id) }}" class="btn btn-outline-primary btn-sm">Read Complete Guide →</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="card">
+      <div class="card-body">
+        {{ macros.empty_state("💡", "No safety guides found", "No safety tips matched your search criteria.") }}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

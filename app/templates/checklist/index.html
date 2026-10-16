@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Personal Safety Checklist | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+  <!-- Hidden CSRF token for AJAX toggle -->
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Personal Safety Preparedness Checklist</h1>
+    <p class="dashboard-subtitle">Essential preventative precautions to secure your communication, travel, and support channels</p>
+  </div>
+
+  <!-- Progress Overview Card -->
+  <div class="card" style="margin-bottom: 28px; background: linear-gradient(135deg, #ffffff 0%, var(--color-soft-mint) 100%);">
+    <div class="card-body">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 800; color: var(--color-dark);">Checklist Completion Status</h2>
+          <span style="font-size: 13px; color: var(--color-secondary-text);">Check off each item once you have executed the precaution</span>
+        </div>
+        <div style="font-size: 24px; font-weight: 800; color: var(--color-forest-mint);" id="checklist-pct">
+          {{ stats.percentage }}%
+        </div>
+      </div>
+
+      <div class="progress-bar-container" style="height: 12px; margin-bottom: 10px;">
+        <div class="progress-fill" id="checklist-progress-fill" style="width: {{ stats.percentage }}%;"></div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--color-secondary-text);">
+        <span><strong id="checklist-completed-count">{{ stats.completed }}</strong> of {{ stats.total }} precautions completed</span>
+        <span>Impacts up to <strong>40%</strong> of your Safety Readiness Score</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer-banner mint" style="margin-bottom: 24px;">
+    <p><strong>Preparedness Notice:</strong> {{ disclaimer }}</p>
+  </div>
+
+  <!-- Checklist Items Group -->
+  <div class="checklist-group">
+    {% for item in items %}
+    {% set is_checked = user_progress.get(item.id, False) %}
+    <div class="checklist-card-item {% if is_checked %}completed{% endif %}" id="checklist-item-{{ item.id }}">
+      <label class="checklist-checkbox-label">
+        <input type="checkbox" {% if is_checked %}checked{% endif %} onchange="toggleChecklistItem({{ item.id }}, this)">
+        <div>
+          <div class="checklist-title">{{ item.title }}</div>
+          {% if item.description %}
+            <div class="checklist-desc">{{ item.description }}</div>
+          {% endif %}
+        </div>
+      </label>
+      <span class="badge badge-plum" style="font-size: 10px; margin-left: 12px;">{{ item.category }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

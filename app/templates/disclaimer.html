@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Emergency Disclaimer | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">Emergency Services & Platform Disclaimer</h1>
+    </div>
+    <div class="card-body" style="font-size: 15px; line-height: 1.8;">
+      <div class="disclaimer-banner" style="font-size: 15px; margin-bottom: 24px;">
+        <p><strong>Primary Disclaimer:</strong> {{ disclaimer_text }}</p>
+      </div>
+
+      <h3 style="margin: 20px 0 10px; color: var(--color-dark);">Immediate Danger Guidelines</h3>
+      <p style="margin-bottom: 16px;">
+        If you are in immediate physical danger, experiencing an active assault, medical emergency, or fire, <strong>dial your local government emergency helpline immediately</strong> (such as 112, 1091, 911, or 999 depending on your jurisdiction).
+      </p>
+
+      <h3 style="margin: 20px 0 10px; color: var(--color-dark);">Safety Readiness Score Definition</h3>
+      <div class="disclaimer-banner mint" style="font-size: 14px; margin-bottom: 20px;">
+        <p><strong>Readiness Score Notice:</strong> {{ readiness_disclaimer }}</p>
+      </div>
+      <p style="margin-bottom: 16px;">
+        The Safety Readiness score is an educational indicator designed to encourage users to configure emergency contacts, review local emergency resources, and engage in preventative precautions. It is an internal platform index and must never be interpreted as an absolute physical guarantee of safety.
+      </p>
+
+      <h3 style="margin: 20px 0 10px; color: var(--color-dark);">Synthetic / Demonstration Data Notice</h3>
+      <p>
+        Sample phone numbers and resource addresses within developer testing databases are simulated demonstrations. When configuring your personal account, always ensure that you add authentic, trusted family members and local verified contacts.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

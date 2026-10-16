@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}{{ title }} | Admin Reports{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 class="dashboard-title">{{ title }}</h1>
+      <p class="dashboard-subtitle">Audited operational data summaries with CSV and JSON export capability</p>
+    </div>
+
+    <!-- Export Action Buttons -->
+    <div style="display: flex; gap: 10px;">
+      <a href="{{ url_for('reports.index', type=report_type, format='csv', status=status_filter, category=category_filter, severity=severity_filter) }}" class="btn btn-outline" download>
+        📥 Export to CSV
+      </a>
+      <a href="{{ url_for('reports.index', type=report_type, format='json', status=status_filter, category=category_filter, severity=severity_filter) }}" class="btn btn-outline" download>
+        💾 Export to JSON
+      </a>
+      <a href="{{ url_for('reports.index', type=report_type, format='print', status=status_filter, category=category_filter, severity=severity_filter) }}" class="btn btn-primary" target="_blank">
+        🖨️ Print Report
+      </a>
+    </div>
+  </div>
+
+  <!-- Report Type Tabs -->
+  <div style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--color-border); padding-bottom: 8px;">
+    <a href="{{ url_for('reports.index', type='sos') }}" class="btn {% if report_type == 'sos' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">
+      🚨 SOS Events Report
+    </a>
+    <a href="{{ url_for('reports.index', type='incidents') }}" class="btn {% if report_type == 'incidents' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">
+      📝 Incidents Report
+    </a>
+    <a href="{{ url_for('reports.index', type='resources') }}" class="btn {% if report_type == 'resources' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">
+      🏥 Resources Report
+    </a>
+  </div>
+
+  <!-- Filters Bar -->
+  <form action="{{ url_for('reports.index') }}" method="GET" class="filter-bar">
+    <input type="hidden" name="type" value="{{ report_type }}">
+
+    {% if report_type == 'sos' %}
+      <select name="status" class="form-select" style="max-width: 180px;">
+        <option value="">All Statuses</option>
+        <option value="ACTIVE" {% if status_filter == 'ACTIVE' %}selected{% endif %}>ACTIVE</option>
+        <option value="RESOLVED" {% if status_filter == 'RESOLVED' %}selected{% endif %}>RESOLVED</option>
+        <option value="CANCELLED" {% if status_filter == 'CANCELLED' %}selected{% endif %}>CANCELLED</option>
+      </select>
+    {% elif report_type == 'incidents' %}
+      <select name="category" class="form-select" style="max-width: 180px;">
+        <option value="">All Categories</option>
+        {% for cat in incident_types %}
+          <option value="{{ cat }}" {% if category_filter == cat %}selected{% endif %}>{{ cat }}</option>
+        {% endfor %}
+      </select>
+      <select name="severity" class="form-select" style="max-width: 140px;">
+        <option value="">All Severities</option>
+        {% for s in severities %}
+          <option value="{{ s }}" {% if severity_filter == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <select name="status" class="form-select" style="max-width: 150px;">
+        <option value="">All Statuses</option>
+        <option value="SUBMITTED" {% if status_filter == 'SUBMITTED' %}selected{% endif %}>SUBMITTED</option>
+        <option value="UNDER REVIEW" {% if status_filter == 'UNDER REVIEW' %}selected{% endif %}>UNDER REVIEW</option>
+        <option value="RESOLVED" {% if status_filter == 'RESOLVED' %}selected{% endif %}>RESOLVED</option>
+        <option value="CLOSED" {% if status_filter == 'CLOSED' %}selected{% endif %}>CLOSED</option>
+      </select>
+    {% elif report_type == 'resources' %}
+      <select name="category" class="form-select" style="max-width: 220px;">
+        <option value="">All Categories</option>
+        {% for c in resource_categories %}
+          <option value="{{ c }}" {% if category_filter == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    {% endif %}
+
+    <button type="submit" class="btn btn-outline">Apply Filters</button>
+  </form>
+
+  <!-- Report Data Table -->
+  <div class="card">
+    <div class="card-body" style="padding: 0;">
+      {% if data %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              {% for key in data[0].keys() %}
+                <th>{{ key }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in data %}
+            <tr>
+              {% for val in row.values() %}
+                <td>{{ val }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 14px 20px; font-size: 13px; color: var(--color-muted); border-top: 1px solid var(--color-border);">
+        Showing {{ data|length }} verified database records
+      </div>
+      {% else %}
+        {{ macros.empty_state("📑", "No report data found", "No records matched your criteria.") }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

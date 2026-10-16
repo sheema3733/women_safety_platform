@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}System Settings | Admin{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 760px;">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">Platform System Settings</h1>
+    <p class="dashboard-subtitle">Configure operational parameters, safety thresholds, and broadcast disclaimer rules</p>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form action="{{ url_for('admin.settings') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+          <label class="form-label" for="setting_app_name">Platform Public Name</label>
+          <input type="text" id="setting_app_name" name="platform_name" class="form-control" value="Women Safety & Emergency Assistance Platform">
+          <span class="form-hint">Displayed in page headers, emails, and alerts.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="setting_sos_timeout">Active SOS Escalation Timeout (Minutes)</label>
+          <input type="number" id="setting_sos_timeout" name="sos_escalation_timeout" class="form-control" value="15" min="5" max="60">
+          <span class="form-hint">Duration after which an unresolved SOS alerts senior supervisor admins.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="setting_disclaimer">Official Emergency Services Disclaimer</label>
+          <textarea id="setting_disclaimer" name="official_disclaimer" class="form-control" rows="3">{{ disclaimer_text }}</textarea>
+          <span class="form-hint">Displayed across all SOS screens, footers, and public resource pages.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="setting_readiness_disclaimer">Safety Readiness Calculation Disclaimer</label>
+          <textarea id="setting_readiness_disclaimer" name="readiness_disclaimer" class="form-control" rows="2">{{ readiness_disclaimer }}</textarea>
+          <span class="form-hint">Displayed whenever Readiness scores are visualized.</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="margin-top: 16px;">Save System Settings</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

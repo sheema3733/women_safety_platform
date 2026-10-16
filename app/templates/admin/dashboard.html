@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}Administrator Control Center | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <span class="badge badge-plum" style="margin-bottom: 6px;">PLATFORM ADMINISTRATION</span>
+      <h1 class="dashboard-title">Central Monitoring & Command Center</h1>
+      <p class="dashboard-subtitle">Real-time database metrics, emergency triage, incident resolution, and audit logs</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <a href="{{ url_for('analytics.index') }}" class="btn btn-outline">📊 View Analytics</a>
+      <a href="{{ url_for('reports.index') }}" class="btn btn-primary">📑 Generate Reports</a>
+    </div>
+  </div>
+
+  <!-- Primary Database KPIs Row -->
+  <div class="kpi-grid">
+    {{ macros.kpi_card("Total Users", kpis.total_users, "👥", "plum") }}
+    {{ macros.kpi_card("Active SOS Alerts", kpis.active_sos, "🚨", "coral" if kpis.active_sos > 0 else "neutral") }}
+    {{ macros.kpi_card("Pending Incidents", kpis.pending_incidents, "📝", "coral" if kpis.pending_incidents > 0 else "mint") }}
+    {{ macros.kpi_card("Emergency Resources", kpis.total_resources, "🏥", "mint") }}
+  </div>
+
+  <div class="kpi-grid">
+    {{ macros.kpi_card("Resolved Incidents", kpis.resolved_incidents, "✓", "mint") }}
+    {{ macros.kpi_card("Total SOS Events", kpis.total_sos, "⚠️", "plum") }}
+    {{ macros.kpi_card("Published Tips", kpis.total_tips, "💡", "plum") }}
+    {{ macros.kpi_card("Total Tip Views", kpis.total_views, "👁️", "neutral") }}
+  </div>
+
+  <!-- 2-Column Administrative Grids -->
+  <div class="dashboard-layout">
+    <!-- Left Column: SOS & Incidents Priority Triage -->
+    <div>
+      <!-- Live / Recent SOS Events -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 class="card-title">Live SOS Emergency Stream</h2>
+            {% if kpis.active_sos > 0 %}
+              <span class="badge badge-coral">{{ kpis.active_sos }} ACTIVE NOW</span>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('admin.sos_management') }}" class="btn btn-outline btn-sm">Manage All SOS</a>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          {% if recent_sos %}
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Status</th>
+                  <th>User</th>
+                  <th>Triggered</th>
+                  <th>Location Note</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for s in recent_sos %}
+                <tr>
+                  <td><strong>#{{ s.id }}</strong></td>
+                  <td>{{ macros.status_badge(s.status) }}</td>
+                  <td>{{ s.user.full_name }}<br><small style="color: var(--color-muted);">{{ s.user.email }}</small></td>
+                  <td>{{ s.created_at.strftime('%b %d, %H:%M') }}</td>
+                  <td>{{ s.address_note or 'Coordinates' }}</td>
+                  <td>
+                    {% if s.is_active %}
+                      <a href="{{ url_for('sos.active_view', sos_id=s.id) }}" class="btn btn-coral btn-sm">Command View</a>
+                    {% else %}
+                      <span style="color: var(--color-muted); font-size: 13px;">Archived</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            {{ macros.empty_state("🛡️", "No emergency SOS events logged", "The platform currently has zero SOS records.") }}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Pending & Recent Incident Reports -->
+      <div class="card">
+        <div class="card-header">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 class="card-title">Recent Safety Incidents</h2>
+            {% if kpis.pending_incidents > 0 %}
+              <span class="badge badge-plum">{{ kpis.pending_incidents }} PENDING</span>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('admin.incidents') }}" class="btn btn-outline btn-sm">Manage Incidents</a>
+        </div>
+        <div class="card-body" style="padding: 0;">
+          {% if recent_incidents %}
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Type</th>
+                  <th>Severity</th>
+                  <th>Status</th>
+                  <th>Area</th>
+                  <th>Review</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for inc in recent_incidents %}
+                <tr>
+                  <td>#{{ inc.id }}</td>
+                  <td><strong>{{ inc.incident_type }}</strong></td>
+                  <td>{{ macros.status_badge(inc.severity) }}</td>
+                  <td>{{ macros.status_badge(inc.status) }}</td>
+                  <td>{{ inc.general_area }}</td>
+                  <td>
+                    <a href="{{ url_for('admin.incident_detail', incident_id=inc.id) }}" class="btn btn-primary btn-sm">Review & Resolve</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            {{ macros.empty_state("📝", "No incidents reported", "There are currently no incidents requiring review.") }}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Audit Logs & Administrative Navigation -->
+    <div>
+      <!-- Admin Quick Navigation -->
+      <div class="card" style="margin-bottom: 24px;">
+        <div class="card-header">
+          <h2 class="card-title">Administrative Modules</h2>
+        </div>
+        <div class="card-body" style="display: flex; flex-direction: column; gap: 10px;">
+          <a href="{{ url_for('admin.users') }}" class="btn btn-outline btn-block" style="justify-content: flex-start;">
+            👥 User Account Management
+          </a>
+          <a href="{{ url_for('admin.resources') }}" class="btn btn-outline btn-block" style="justify-content: flex-start;">
+            🏥 Emergency Resources & Safe Havens
+          </a>
+          <a href="{{ url_for('admin.tips') }}" class="btn btn-outline btn-block" style="justify-content: flex-start;">
+            💡 Safety Content & Education
+          </a>
+          <a href="{{ url_for('analytics.index') }}" class="btn btn-outline btn-block" style="justify-content: flex-start;">
+            📊 Visual Chart Analytics
+          </a>
+          <a href="{{ url_for('reports.index') }}" class="btn btn-outline btn-block" style="justify-content: flex-start;">
+            📑 Export Data Reports (CSV / JSON)
+          </a>
+          <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline btn-block" style="justify-content: flex-start;">
+            🔒 Security Audit Trail
+          </a>
+          <a href="{{ url_for('admin.settings') }}" class="btn btn-outline btn-block" style="justify-content: flex-start;">
+            ⚙️ Platform System Settings
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Security Audit Logs -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Security Audit Feed</h2>
+          <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline btn-sm">Full Logs</a>
+        </div>
+        <div class="card-body" style="padding: 10px 16px;">
+          {% if recent_logs %}
+            {% for log in recent_logs %}
+            <div style="padding: 8px 0; border-bottom: 1px solid var(--color-border); font-size: 13px;">
+              <div style="display: flex; justify-content: space-between;">
+                <strong>{{ log.action }}</strong>
+                <span class="badge badge-plum" style="font-size: 10px;">{{ log.category }}</span>
+              </div>
+              <p style="color: var(--color-secondary-text); margin: 3px 0;">{{ log.details }}</p>
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-muted);">
+                <span>User: {{ log.user_email or 'System' }}</span>
+                <span>{{ log.created_at.strftime('%H:%M:%S') }}</span>
+              </div>
+            </div>
+            {% endfor %}
+          {% else %}
+            <p style="font-size: 13px; color: var(--color-muted);">No audit logs yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

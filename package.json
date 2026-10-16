@@ -1,0 +1,22 @@
+{
+  "name": "womensafety-platform",
+  "version": "1.0.0",
+  "description": "Women Safety & Emergency Assistance Platform",
+  "private": true,
+  "scripts": {
+    "start": "python app.py",
+    "run": "python app.py",
+    "build": "python -m compileall app/",
+    "test": "pytest -v",
+    "measure": "python measure.py"
+  },
+  "keywords": [
+    "women-safety",
+    "emergency-assistance",
+    "public-safety",
+    "sos"
+  ],
+  "author": "Women Safety Platform Engineering",
+  "license": "UNLICENSED",
+  "dependencies": {}
+}

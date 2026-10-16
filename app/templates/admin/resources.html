@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}Manage Emergency Resources | Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 class="dashboard-title">Emergency Resource Management</h1>
+      <p class="dashboard-subtitle">Register and maintain verified safe havens, medical facilities, and police assistance points</p>
+    </div>
+    <a href="{{ url_for('admin.resource_create') }}" class="btn btn-primary">+ Add New Resource</a>
+  </div>
+
+  <!-- Search & Filters -->
+  <form action="{{ url_for('admin.resources') }}" method="GET" class="filter-bar">
+    <input type="text" name="q" class="form-control search-input" placeholder="Search by name, area, or description..." value="{{ search }}">
+
+    <select name="category" class="form-select" style="max-width: 200px;">
+      <option value="">All Categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="city" class="form-select" style="max-width: 160px;">
+      <option value="">All Cities</option>
+      {% for c in cities %}
+        <option value="{{ c }}" {% if city == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="status" class="form-select" style="max-width: 140px;">
+      <option value="">All Statuses</option>
+      <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+      <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <button type="submit" class="btn btn-outline">Filter</button>
+    {% if search or category or city or status_filter %}
+      <a href="{{ url_for('admin.resources') }}" class="btn btn-outline" style="color: var(--color-muted);">Reset</a>
+    {% endif %}
+  </form>
+
+  <div class="card">
+    <div class="card-body" style="padding: 0;">
+      {% if resources %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>City</th>
+              <th>Area</th>
+              <th>Phone</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in resources %}
+            <tr>
+              <td>#{{ r.id }}</td>
+              <td><strong>{{ r.name }}</strong></td>
+              <td><span class="badge badge-plum">{{ r.category }}</span></td>
+              <td>{{ r.city }}</td>
+              <td>{{ r.general_area }}</td>
+              <td><a href="tel:{{ r.demo_phone }}" style="color: var(--color-forest-mint); font-weight: 700;">{{ r.demo_phone }}</a></td>
+              <td>
+                {% if r.is_active %}
+                  <span class="badge badge-forest">Active</span>
+                {% else %}
+                  <span class="badge badge-muted">Inactive</span>
+                {% endif %}
+              </td>
+              <td style="display: flex; gap: 8px;">
+                <a href="{{ url_for('admin.resource_edit', resource_id=r.id) }}" class="btn btn-outline btn-sm">Edit</a>
+                <form action="{{ url_for('admin.resource_delete', resource_id=r.id) }}" method="POST" onsubmit="return confirm('Delete resource {{ r.name }}?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-outline btn-sm" style="color: var(--color-muted-coral); border-color: #f5cfca;">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 16px;">
+        {{ macros.pagination(total, page, per_page, 'admin.resources', q=search, category=category, city=city, status=status_filter) }}
+      </div>
+      {% else %}
+        {{ macros.empty_state("🏥", "No resources found", "No emergency resources match the specified criteria.", "Add Resource", url_for('admin.resource_create')) }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}System Audit Logs | Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+    <div>
+      <h1 class="dashboard-title">Security & System Audit Logs</h1>
+      <p class="dashboard-subtitle">Immutable audit trail of authentication events, SOS activations, incident reviews, and system modifications</p>
+    </div>
+    <span class="badge badge-plum">{{ total }} Audit Events Recorded</span>
+  </div>
+
+  <!-- Search and Category Filter -->
+  <form action="{{ url_for('admin.audit_logs') }}" method="GET" class="filter-bar">
+    <input type="text" name="q" class="form-control search-input" placeholder="Search by action, email, or details..." value="{{ search }}">
+
+    <select name="category" class="form-select" style="max-width: 180px;">
+      <option value="">All Categories</option>
+      {% for cat in categories %}
+        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+      {% endfor %}
+    </select>
+
+    <button type="submit" class="btn btn-outline">Filter Logs</button>
+    {% if search or selected_category %}
+      <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-outline" style="color: var(--color-muted);">Reset</a>
+    {% endif %}
+  </form>
+
+  <div class="card">
+    <div class="card-body" style="padding: 0;">
+      {% if logs %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Action</th>
+              <th>Category</th>
+              <th>Actor Email</th>
+              <th>IP Address</th>
+              <th>Audit Log Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td style="white-space: nowrap; font-size: 13px; color: var(--color-secondary-text);">
+                {{ log.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+              </td>
+              <td><strong>{{ log.action }}</strong></td>
+              <td><span class="badge badge-plum">{{ log.category }}</span></td>
+              <td>{{ log.user_email or 'Unauthenticated / System' }}</td>
+              <td><code>{{ log.ip_address or '127.0.0.1' }}</code></td>
+              <td style="font-size: 13px; color: var(--color-dark); max-width: 320px;">
+                {{ log.details or 'N/A' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div style="padding: 16px;">
+        {{ macros.pagination(total, page, per_page, 'admin.audit_logs', q=search, category=selected_category) }}
+      </div>
+      {% else %}
+        {{ macros.empty_state("🔒", "No audit logs found", "No security audit records match your query.") }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

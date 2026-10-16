@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}ACTIVE SOS ALERT #{{ sos.id }} | Women Safety Command{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px;">
+  <!-- Active Emergency Command Header Banner -->
+  <div class="sos-active-command">
+    <div class="active-command-header">
+      <div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+          <span class="badge badge-coral" style="font-size: 14px; padding: 6px 16px;">● EMERGENCY ALERT ACTIVE</span>
+          <span style="font-size: 13px; color: var(--color-muted-coral); font-weight: 700;">SOS Event #{{ sos.id }}</span>
+        </div>
+        <h1 style="font-size: 26px; font-weight: 800; color: var(--color-dark);">
+          Active Assistance Command Station
+        </h1>
+        <p style="font-size: 14px; color: var(--color-secondary-text); margin-top: 4px;">
+          Triggered at {{ sos.created_at.strftime('%H:%M:%S on %b %d, %Y') }}
+          {% if sos.address_note %} &bull; 📍 {{ sos.address_note }}{% endif %}
+        </p>
+      </div>
+
+      <!-- Action Buttons: Resolve / Cancel -->
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-forest btn-lg" data-modal-target="resolve-sos-modal">
+          ✓ Mark Safe & Resolve
+        </button>
+        <button type="button" class="btn btn-outline btn-lg" data-modal-target="cancel-sos-modal">
+          Cancel (False Alarm)
+        </button>
+      </div>
+    </div>
+
+    <!-- Mandatory Disclaimer -->
+    <div class="disclaimer-banner" style="margin-bottom: 24px;">
+      <span>⚠️</span>
+      <div>
+        <strong>Official Emergency Notice:</strong> {{ disclaimer }}
+        <div style="margin-top: 2px;">If you are in immediate life-threatening danger, call <strong>112 / 1091 / 911</strong> immediately.</div>
+      </div>
+    </div>
+
+    <!-- 1. Trusted Emergency Contacts One-Touch Dials -->
+    <div style="margin-bottom: 28px;">
+      <h2 style="font-size: 18px; font-weight: 800; color: var(--color-dark); margin-bottom: 12px;">
+        📞 1. One-Touch Emergency Contact Dials
+      </h2>
+      {% if trusted_contacts %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+        {% for c in trusted_contacts %}
+        <div style="background: var(--color-white); border: 2px solid var(--color-forest-mint); border-radius: var(--radius-md); padding: 16px; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong>{{ c.name }}</strong>
+            <span class="badge badge-forest" style="font-size: 10px;">{{ c.relationship }}</span>
+          </div>
+          <a href="tel:{{ c.phone }}" class="btn btn-forest btn-block" style="margin-top: 10px; font-size: 15px;">
+            📞 Call {{ c.phone }}
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <div style="padding: 16px; background: var(--color-white); border-radius: var(--radius-sm); border: 1px dashed var(--color-border); font-size: 14px;">
+          No contacts configured yet. <a href="{{ url_for('contacts.add') }}" style="font-weight: 700;">Add emergency contacts now</a>.
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- 2. Immediate Step-by-Step Emergency Guidance -->
+    <div style="margin-bottom: 28px;">
+      <h2 style="font-size: 18px; font-weight: 800; color: var(--color-dark); margin-bottom: 12px;">
+        🛡️ 2. Recommended Safety Protocol Steps
+      </h2>
+      <div class="guidance-list">
+        {% for step in guidance_steps %}
+        <div class="guidance-item">
+          <div class="guidance-number">{{ step.step }}</div>
+          <div>
+            <h4 style="font-size: 15px; font-weight: 700; color: var(--color-dark); margin-bottom: 4px;">{{ step.title }}</h4>
+            <p style="font-size: 13px; color: var(--color-secondary-text);">{{ step.detail }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 3. Nearby Verified Safe Havens & Resources -->
+    <div style="margin-bottom: 28px;">
+      <h2 style="font-size: 18px; font-weight: 800; color: var(--color-dark); margin-bottom: 12px;">
+        🏥 3. Verified Safe Havens & Emergency Centers
+      </h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+        {% for r in nearby_resources %}
+        <div style="background: var(--color-white); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 16px;">
+          <span class="badge badge-plum" style="margin-bottom: 6px;">{{ r.category }}</span>
+          <h4 style="font-size: 15px; font-weight: 700; color: var(--color-dark);">{{ r.name }}</h4>
+          <p style="font-size: 12px; color: var(--color-secondary-text); margin: 4px 0 10px;">📍 {{ r.general_area }}, {{ r.city }}</p>
+          <a href="tel:{{ r.demo_phone }}" style="font-weight: 700; color: var(--color-forest-mint); font-size: 14px;">
+            📞 {{ r.demo_phone }}
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 4. SOS Audit Trail -->
+    <div>
+      <h2 style="font-size: 16px; font-weight: 800; color: var(--color-dark); margin-bottom: 10px;">
+        📝 Event Audit Trail
+      </h2>
+      <div style="background: var(--color-white); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 14px 18px; font-size: 13px;">
+        {% for log in sos.audit_entries %}
+        <div style="padding: 6px 0; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between;">
+          <span><strong>{{ log.action }}</strong>: {{ log.notes }}</span>
+          <span style="color: var(--color-muted); font-size: 11px;">{{ log.created_at.strftime('%H:%M:%S') }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Resolve SOS -->
+<div class="modal-backdrop" id="resolve-sos-modal">
+  <div class="modal-content">
+    <div class="modal-header" style="background: var(--color-soft-mint);">
+      <h3 class="modal-title" style="color: var(--color-forest-mint);">✓ Resolve Emergency SOS Alert</h3>
+      <button class="modal-close">&times;</button>
+    </div>
+    <form action="{{ url_for('sos.resolve', sos_id=sos.id) }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="modal-body">
+        <p style="font-size: 14px; margin-bottom: 16px;">
+          Confirming this action will update the alert status to <strong>RESOLVED</strong>, notify responders that you are safe, and log the outcome.
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="resolution_notes">Safety / Resolution Notes (Optional)</label>
+          <textarea id="resolution_notes" name="resolution_notes" class="form-control" rows="3" placeholder="e.g. Reached safe location, family member picked me up, situation resolved safely."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Back to Command</button>
+        <button type="submit" class="btn btn-forest">Confirm I Am Safe</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Cancel SOS -->
+<div class="modal-backdrop" id="cancel-sos-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">Cancel SOS (False Alarm)</h3>
+      <button class="modal-close">&times;</button>
+    </div>
+    <form action="{{ url_for('sos.cancel', sos_id=sos.id) }}" method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="modal-body">
+        <p style="font-size: 14px; margin-bottom: 16px;">
+          Was this alert triggered unintentionally? Marking as cancelled will record the cancellation reason in the audit history.
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="cancel_reason">Cancellation Reason</label>
+          <input type="text" id="cancel_reason" name="cancel_reason" class="form-control" value="Accidental button tap / false alarm" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Keep SOS Active</button>
+        <button type="submit" class="btn btn-coral">Confirm Cancellation</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

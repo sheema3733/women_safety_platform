@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Women Safety & Emergency Assistance Platform | Preparedness & Rapid Help{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Hero Section -->
+  <section style="background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-soft-mint) 100%); border-radius: var(--radius-lg); padding: 60px 40px; margin-bottom: 48px; border: 1px solid var(--color-border);">
+    <div style="max-width: 750px;">
+      <span class="badge badge-plum" style="margin-bottom: 16px;">Community Safety & Assistance</span>
+      <h1 style="font-size: 42px; font-weight: 800; color: var(--color-dark); line-height: 1.2; margin-bottom: 18px; letter-spacing: -1px;">
+        Personal Safety Preparedness & Immediate Emergency Support
+      </h1>
+      <p style="font-size: 18px; color: var(--color-secondary-text); margin-bottom: 30px; line-height: 1.6;">
+        A comprehensive, database-driven platform dedicated to women's safety. Manage trusted contacts, track personal preparedness, access verified safe havens, and activate rapid SOS workflows in critical moments.
+      </p>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        {% if current_user %}
+          <a href="{{ url_for('user.dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard →</a>
+          <a href="{{ url_for('sos.center') }}" class="btn btn-coral btn-lg">Emergency SOS Center 🚨</a>
+        {% else %}
+          <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Create Free Account</a>
+          <a href="{{ url_for('resources.index') }}" class="btn btn-outline btn-lg">Browse Verified Resources</a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform Disclaimer Banner -->
+  <div class="disclaimer-banner">
+    <div><strong>Notice:</strong> {{ disclaimer_text }}</div>
+  </div>
+
+  <!-- Key Pillars Grid -->
+  <section style="margin-bottom: 54px;">
+    <div style="text-align: center; margin-bottom: 36px;">
+      <h2 style="font-size: 28px; font-weight: 800; color: var(--color-dark);">Four Pillars of Platform Protection</h2>
+      <p style="color: var(--color-secondary-text); margin-top: 6px;">Combining preventative preparation with rapid incident response.</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px;">
+      <div class="card">
+        <div class="card-body">
+          <div class="kpi-icon-wrap kpi-icon-coral" style="margin-bottom: 16px;">🚨</div>
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Rapid SOS Center</h3>
+          <p style="font-size: 14px; color: var(--color-secondary-text);">Two-step confirmed emergency trigger connecting your coordinates, trusted contacts, and verified guidance instantly.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="kpi-icon-wrap kpi-icon-mint" style="margin-bottom: 16px;">📊</div>
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Safety Readiness Score</h3>
+          <p style="font-size: 14px; color: var(--color-secondary-text);">Dynamic algorithm assessing your preparedness across contacts, safety checklists, and verified local knowledge.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="kpi-icon-wrap kpi-icon-plum" style="margin-bottom: 16px;">🏥</div>
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Verified Safe Havens</h3>
+          <p style="font-size: 14px; color: var(--color-secondary-text);">Curated directory of police stations, medical facilities, women's support centers, and 24/7 emergency centers.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="kpi-icon-wrap kpi-icon-neutral" style="margin-bottom: 16px;">📝</div>
+          <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Incident Reporting</h3>
+          <p style="font-size: 14px; color: var(--color-secondary-text);">Secure reporting portal for harassment or unsafe areas with administrative investigation and resolution tracking.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Resources Section -->
+  <section style="margin-bottom: 54px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div>
+        <h2 style="font-size: 24px; font-weight: 800; color: var(--color-dark);">Verified Emergency Resources</h2>
+        <p style="color: var(--color-secondary-text); font-size: 14px;">Direct access to emergency centers and support services.</p>
+      </div>
+      <a href="{{ url_for('resources.index') }}" class="btn btn-outline btn-sm">View All Resources →</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+      {% for res in sample_resources %}
+      <div class="card">
+        <div class="card-body">
+          <span class="badge badge-plum" style="margin-bottom: 8px;">{{ res.category }}</span>
+          <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">{{ res.name }}</h4>
+          <p style="font-size: 13px; color: var(--color-secondary-text); margin-bottom: 12px;">📍 {{ res.general_area }}, {{ res.city }}</p>
+          <div style="display: flex; align-items: center; justify-content: space-between; font-size: 13px;">
+            <a href="tel:{{ res.demo_phone }}" style="color: var(--color-forest-mint); font-weight: 700;">📞 {{ res.demo_phone }}</a>
+            <a href="{{ url_for('resources.detail', resource_id=res.id) }}" style="color: var(--color-primary);">Details ›</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Featured Safety Guides -->
+  <section style="margin-bottom: 40px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div>
+        <h2 style="font-size: 24px; font-weight: 800; color: var(--color-dark);">Practical Safety Education</h2>
+        <p style="color: var(--color-secondary-text); font-size: 14px;">Actionable safety precautions for daily life and travel.</p>
+      </div>
+      <a href="{{ url_for('tips.index') }}" class="btn btn-outline btn-sm">Browse All Guides →</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+      {% for tip in featured_tips %}
+      <div class="card">
+        <div class="card-body">
+          <span class="badge badge-forest" style="margin-bottom: 10px;">{{ tip.category }}</span>
+          <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 8px;">{{ tip.title }}</h3>
+          <p style="font-size: 14px; color: var(--color-secondary-text); margin-bottom: 16px;">{{ tip.summary }}</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+            <span style="color: var(--color-muted);">⏱️ {{ tip.read_time_minutes }} min read</span>
+            <a href="{{ url_for('tips.detail', tip_id=tip.id) }}" class="btn btn-outline-primary btn-sm">Read Guide</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

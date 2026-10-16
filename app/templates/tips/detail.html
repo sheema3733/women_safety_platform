@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tip.title }} | Safety Guide{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 780px;">
+  <div style="margin-bottom: 20px;">
+    <a href="{{ url_for('tips.index') }}" class="btn btn-outline btn-sm">← Back to Safety Guides</a>
+  </div>
+
+  <article class="card">
+    <div class="card-header">
+      <div>
+        <span class="badge badge-forest" style="margin-bottom: 8px;">{{ tip.category }}</span>
+        <h1 class="card-title" style="font-size: 26px;">{{ tip.title }}</h1>
+        <div style="display: flex; gap: 14px; margin-top: 8px; font-size: 13px; color: var(--color-secondary-text);">
+          <span>⏱️ {{ tip.read_time_minutes }} min read</span>
+          <span>&bull;</span>
+          <span>👁️ {{ tip.view_count }} views</span>
+          {% if current_user %}
+            <span>&bull;</span>
+            <span style="color: var(--color-forest-mint); font-weight: 600;">✓ Counted towards Safety Readiness</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="padding: 16px; background: var(--color-cream); border-left: 4px solid var(--color-primary); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-bottom: 24px; font-size: 15px; font-weight: 500;">
+        {{ tip.summary }}
+      </div>
+
+      <div style="font-size: 15px; line-height: 1.8; color: var(--color-dark); white-space: pre-wrap;">{{ tip.content }}</div>
+
+      <div class="disclaimer-banner mint" style="margin-top: 36px; margin-bottom: 0;">
+        <p><strong>Preparedness Note:</strong> Applying practical safety habits and remaining alert significantly improves situational defense and emergency readiness.</p>
+      </div>
+    </div>
+  </article>
+</div>
+{% endblock %}

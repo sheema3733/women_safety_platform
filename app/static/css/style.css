@@ -1,0 +1,297 @@
+:root {
+  /* Primary & Accent Palette */
+  --color-primary: #734B6D;
+  --color-primary-hover: #5d3b58;
+  --color-primary-light: #f5eff4;
+  --color-forest-mint: #4A8B71;
+  --color-forest-mint-hover: #3d735d;
+  --color-soft-mint: #EBF4F0;
+  --color-muted-coral: #C77366;
+  --color-muted-coral-hover: #b35f52;
+  --color-coral-light: #faefed;
+
+  /* Neutrals & Surfaces */
+  --color-white: #FFFFFF;
+  --color-cream: #FDFBFD;
+  --color-dark: #231A22;
+  --color-secondary-text: #736171;
+  --color-muted: #A2829D;
+  --color-border: #E5E0E8;
+  --color-card-bg: #FFFFFF;
+  --color-body-bg: #FDFBFD;
+
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-code: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Spacing & Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(35, 26, 34, 0.05);
+  --shadow-md: 0 4px 14px rgba(115, 75, 109, 0.08);
+  --shadow-lg: 0 10px 25px rgba(115, 75, 109, 0.12);
+  --transition: all 0.2s ease-in-out;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-body-bg);
+  color: var(--color-dark);
+  line-height: 1.6;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* Layout Containers */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px 0 60px;
+}
+
+/* Top Navigation Bar */
+.navbar {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.navbar .nav-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 68px;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.3px;
+}
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+}
+
+.nav-link {
+  color: var(--color-dark);
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* User Pill & Notification Bell */
+.notif-badge-btn {
+  position: relative;
+  background: var(--color-cream);
+  border: 1px solid var(--color-border);
+  color: var(--color-dark);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.notif-badge-btn:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.notif-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--color-muted-coral);
+  color: var(--color-white);
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  padding: 2px 6px;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* Persistent SOS Header Trigger */
+.btn-nav-sos {
+  background-color: var(--color-muted-coral);
+  color: var(--color-white);
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(199, 115, 102, 0.3);
+  transition: var(--transition);
+}
+
+.btn-nav-sos:hover {
+  background-color: var(--color-muted-coral-hover);
+  color: var(--color-white);
+  transform: translateY(-1px);
+}
+
+.btn-nav-sos.active-pulsing {
+  animation: pulse-sos 1.8s infinite;
+}
+
+@keyframes pulse-sos {
+  0% { box-shadow: 0 0 0 0 rgba(199, 115, 102, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(199, 115, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(199, 115, 102, 0); }
+}
+
+/* Platform Footer */
+.footer {
+  background: var(--color-white);
+  border-top: 1px solid var(--color-border);
+  padding: 40px 0 24px;
+  margin-top: auto;
+  font-size: 14px;
+  color: var(--color-secondary-text);
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.footer h4 {
+  color: var(--color-dark);
+  font-size: 16px;
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  color: var(--color-secondary-text);
+}
+
+.footer-links a:hover {
+  color: var(--color-primary);
+}
+
+.footer-bottom {
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-muted);
+}
+
+/* Mobile Nav Toggle */
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--color-dark);
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .mobile-toggle {
+    display: block;
+  }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    width: 100%;
+    background: var(--color-white);
+    flex-direction: column;
+    padding: 20px;
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}

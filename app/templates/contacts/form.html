@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit Contact' if is_edit else 'Add Emergency Contact' }} | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 580px;">
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">{{ 'Edit Emergency Contact' if is_edit else 'Add New Emergency Contact' }}</h1>
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('contacts.edit', contact_id=contact.id) if is_edit else url_for('contacts.add') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+          <label class="form-label" for="name">Contact Name</label>
+          <input type="text" id="name" name="name" class="form-control" value="{{ form_data.name or '' }}" required autofocus>
+          {% if errors.name %}
+            <span class="form-error">{{ errors.name }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="relationship">Relationship</label>
+          <input type="text" id="relationship" name="relationship" class="form-control" value="{{ form_data.relationship or '' }}" placeholder="e.g. Mother, Sister, Roommate, Colleague" required>
+          {% if errors.relationship %}
+            <span class="form-error">{{ errors.relationship }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">Phone Number (with country/area code)</label>
+          <input type="tel" id="phone" name="phone" class="form-control" value="{{ form_data.phone or '' }}" placeholder="+1 555-0199" required>
+          <span class="form-hint">Ensure this number is dialed without international roaming blockers.</span>
+          {% if errors.phone %}
+            <span class="form-error">{{ errors.phone }}</span>
+          {% endif %}
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="priority_order">Priority Order</label>
+            <input type="number" id="priority_order" name="priority_order" class="form-control" value="{{ form_data.priority_order or 1 }}" min="1" max="99">
+            <span class="form-hint">1 = Primary contact</span>
+          </div>
+
+          <div class="form-group" style="display: flex; flex-direction: column; justify-content: center;">
+            <label class="form-check" style="margin-top: 14px;">
+              <input type="checkbox" name="is_trusted" value="1" {% if form_data.is_trusted %}checked{% endif %}>
+              <span style="font-weight: 600; font-size: 14px;">Mark as Trusted Contact</span>
+            </label>
+            <span class="form-hint" style="margin-left: 28px;">Trusted contacts get top placement in active SOS dials.</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+          <button type="submit" class="btn btn-primary btn-lg">{{ 'Save Changes' if is_edit else 'Add Contact' }}</button>
+          <a href="{{ url_for('contacts.index') }}" class="btn btn-outline btn-lg">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

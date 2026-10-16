@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% import "components/macros.html" as macros %}
+
+{% block title %}Emergency SOS Center | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 850px;">
+  <!-- Mandatory Platform Emergency Disclaimer -->
+  <div class="disclaimer-banner" style="font-size: 14px;">
+    <span>⚠️</span>
+    <div>
+      <strong>Emergency Disclaimer:</strong> {{ disclaimer }}
+      <div style="margin-top: 4px; font-weight: 700;">If you are facing an active assault or immediate bodily danger, call official police/emergency lines immediately (112 / 1091 / 911).</div>
+    </div>
+  </div>
+
+  <!-- Primary SOS Trigger Card -->
+  <div class="card" style="border: 2px solid var(--color-muted-coral); box-shadow: var(--shadow-lg); text-align: center; padding: 30px 20px; margin-bottom: 30px;">
+    <div style="max-width: 550px; margin: 0 auto;">
+      <span class="badge badge-coral" style="font-size: 13px; padding: 6px 16px; margin-bottom: 16px;">HIGH URGENCY ASSISTANCE</span>
+      <h1 style="font-size: 32px; font-weight: 800; color: var(--color-dark); margin-bottom: 12px;">Emergency SOS Center</h1>
+      <p style="color: var(--color-secondary-text); font-size: 15px; margin-bottom: 28px;">
+        Activating SOS creates an ACTIVE emergency alert, captures your coordinates, logs an immediate audit trail, alerts administrators, and equips you with one-touch contact links and localized safe havens.
+      </p>
+
+      <!-- Trigger Activation Form -->
+      <form action="{{ url_for('sos.trigger') }}" method="POST" id="sos-trigger-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" id="sos-lat" name="latitude" value="">
+        <input type="hidden" id="sos-lng" name="longitude" value="">
+
+        <div class="form-group" style="text-align: left; margin-bottom: 16px;">
+          <label class="form-label" for="address_note">Location / Landmark Note (Optional)</label>
+          <input type="text" id="address_note" name="address_note" class="form-control" placeholder="e.g. Near Central Station, bus stand, or street name">
+          <span id="sos-location-status" style="font-size: 12px; color: var(--color-secondary-text); margin-top: 4px; display: block;">Detecting browser GPS...</span>
+        </div>
+
+        <div class="form-group" style="text-align: left; margin-bottom: 24px;">
+          <label class="form-label" for="emergency_notes">Urgent Situation Note (Optional)</label>
+          <input type="text" id="emergency_notes" name="emergency_notes" class="form-control" placeholder="e.g. Feeling followed, suspicious car, stranded alone">
+        </div>
+
+        <!-- Big Red Confirmation Button -->
+        <button type="button" class="btn btn-coral btn-lg btn-block" style="font-size: 20px; padding: 18px; border-radius: var(--radius-md); box-shadow: 0 4px 18px rgba(199, 115, 102, 0.4);" data-modal-target="sos-confirm-modal">
+          🚨 ACTIVATE EMERGENCY SOS NOW
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Trusted Contacts Quick View -->
+  <div class="card" style="margin-bottom: 30px;">
+    <div class="card-header">
+      <h2 class="card-title">Configured Emergency Contacts ({{ trusted_contacts|length }})</h2>
+      <a href="{{ url_for('contacts.index') }}" class="btn btn-outline btn-sm">Manage Contacts</a>
+    </div>
+    <div class="card-body">
+      {% if trusted_contacts %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+        {% for c in trusted_contacts %}
+        <div style="background: var(--color-cream); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <strong>{{ c.name }}</strong>
+            {% if c.is_trusted %}<span class="badge badge-forest" style="font-size: 10px;">Trusted</span>{% endif %}
+          </div>
+          <div style="font-size: 12px; color: var(--color-secondary-text);">{{ c.relationship }}</div>
+          <a href="tel:{{ c.phone }}" style="display: inline-block; margin-top: 8px; font-weight: 700; color: var(--color-forest-mint); font-size: 14px;">
+            📞 {{ c.phone }}
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        {{ macros.empty_state("👥", "No emergency contacts configured", "Add trusted contacts right away to ensure your network can be alerted.", "Add Contact", url_for('contacts.add')) }}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Recent SOS Events -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Past SOS Records</h2>
+      <a href="{{ url_for('sos.history') }}" class="btn btn-outline btn-sm">Full History</a>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      {% if recent_events %}
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Status</th>
+              <th>Date & Time</th>
+              <th>Location</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ev in recent_events %}
+            <tr>
+              <td>#{{ ev.id }}</td>
+              <td>{{ macros.status_badge(ev.status) }}</td>
+              <td>{{ ev.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ ev.address_note or 'GPS Coordinates' }}</td>
+              <td>{{ ev.resolution_notes or 'None' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        {{ macros.empty_state("🛡️", "No previous SOS alerts on record", "You have not triggered any SOS alerts.") }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Modal Dialog: Two-Step SOS Confirmation -->
+<div class="modal-backdrop" id="sos-confirm-modal">
+  <div class="modal-content" style="border: 2px solid var(--color-muted-coral);">
+    <div class="modal-header" style="background: #fdf5f4;">
+      <h3 class="modal-title" style="color: var(--color-muted-coral);">⚠️ Confirm Emergency SOS Activation</h3>
+      <button class="modal-close" aria-label="Close modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 15px; margin-bottom: 16px;">
+        Are you sure you want to activate the <strong>Emergency SOS Workflow</strong>?
+      </p>
+      <ul style="font-size: 13px; color: var(--color-secondary-text); padding-left: 20px; line-height: 1.6; margin-bottom: 18px;">
+        <li>An ACTIVE emergency record with timestamp and coordinates will be logged.</li>
+        <li>Your trusted emergency contacts and platform admins will receive internal high-priority notifications.</li>
+        <li>You will be directed to the Active Emergency Command Station with guidance checklist and one-touch dials.</li>
+      </ul>
+      <div class="disclaimer-banner" style="margin-bottom: 0; font-size: 12px;">
+        <p>{{ disclaimer }}</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+      <button type="button" class="btn btn-coral" onclick="document.getElementById('sos-trigger-form').submit();">
+        🚨 Yes, Activate SOS
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}

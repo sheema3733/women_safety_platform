@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}400 - Bad Request | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 600px; text-align: center; padding: 60px 20px;">
+  <div style="font-size: 64px; color: var(--color-muted-coral); margin-bottom: 12px;">⚠️</div>
+  <h1 style="font-size: 28px; font-weight: 800; color: var(--color-dark); margin-bottom: 12px;">Bad Request (400)</h1>
+  <p style="color: var(--color-secondary-text); font-size: 15px; margin-bottom: 24px;">
+    {{ error.description if error and error.description else "The request could not be processed due to invalid syntax or security validation parameters." }}
+  </p>
+  <a href="{{ url_for('main.index') }}" class="btn btn-primary">Return to Safety Home</a>
+</div>
+{% endblock %}

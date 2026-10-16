@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Environments & Virtualenv
+venv/
+.venv/
+env/
+ENV/
+
+# Local database instances & logs
+instance/*.db
+*.log
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+desktop.ini
+
+# Release archives
+womensafety_platform.zip

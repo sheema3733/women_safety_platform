@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ resource.name }} | Emergency Resource{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 760px;">
+  <div style="margin-bottom: 20px;">
+    <a href="{{ url_for('resources.index') }}" class="btn btn-outline btn-sm">← Back to Resources</a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <span class="badge badge-plum" style="margin-bottom: 6px;">{{ resource.category }}</span>
+        <h1 class="card-title" style="font-size: 24px;">{{ resource.name }}</h1>
+      </div>
+      <span class="badge badge-forest">Verified Active</span>
+    </div>
+    <div class="card-body">
+      <div style="padding: 16px; background: var(--color-soft-mint); border-radius: var(--radius-sm); margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+        <div>
+          <span style="font-size: 12px; color: var(--color-secondary-text); font-weight: 600; text-transform: uppercase;">Direct Contact Line</span>
+          <div style="font-size: 20px; font-weight: 800; color: var(--color-forest-mint);">{{ resource.demo_phone }}</div>
+        </div>
+        <a href="tel:{{ resource.demo_phone }}" class="btn btn-forest btn-lg">📞 Direct Call</a>
+      </div>
+
+      <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Address & Region</h3>
+      <p style="font-size: 15px; color: var(--color-dark); margin-bottom: 20px;">
+        📍 {{ resource.general_area }}, {{ resource.city }}
+      </p>
+
+      {% if resource.latitude and resource.longitude %}
+      <div style="padding: 12px 16px; background: var(--color-cream); border: 1px solid var(--color-border); border-radius: var(--radius-sm); margin-bottom: 24px; font-size: 13px;">
+        <strong>GPS Coordinates:</strong> {{ resource.latitude }}, {{ resource.longitude }}
+        <a href="https://maps.google.com/?q={{ resource.latitude }},{{ resource.longitude }}" target="_blank" rel="noopener" style="margin-left: 10px; font-weight: 600;">Open in External Maps ↗</a>
+      </div>
+      {% endif %}
+
+      <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Facility Overview & Services</h3>
+      <p style="font-size: 14px; color: var(--color-secondary-text); line-height: 1.8;">
+        {{ resource.description or 'A registered community emergency resource equipped for immediate safety assistance, victim protection, and medical or legal aid.' }}
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

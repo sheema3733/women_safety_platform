@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}About | Women Safety & Emergency Assistance Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">About the Platform</h1>
+    </div>
+    <div class="card-body" style="font-size: 15px; line-height: 1.8;">
+      <p style="margin-bottom: 16px;">
+        The <strong>Women Safety & Emergency Assistance Platform</strong> is a modern, full-stack safety web application built to empower individuals with preventative preparedness, education, verified emergency resources, and rapid incident assistance workflows.
+      </p>
+
+      <h3 style="margin: 24px 0 12px; color: var(--color-dark);">Our Mission & Principles</h3>
+      <ul style="padding-left: 20px; margin-bottom: 20px;">
+        <li><strong>Preparedness Over Panic:</strong> Helping users proactively configure trusted contacts and complete safety readiness checklists before emergencies happen.</li>
+        <li><strong>Zero Compromise on Privacy:</strong> Transparent data collection, strict user data isolation, and no unnecessary logging of sensitive credentials.</li>
+        <li><strong>Connected Workflows:</strong> From one-click emergency triggers to administrator incident resolution and verified safe haven lookups.</li>
+      </ul>
+
+      <h3 style="margin: 24px 0 12px; color: var(--color-dark);">Responsible Emergency Design</h3>
+      <p style="margin-bottom: 16px;">
+        Our SOS Center is built with clear ethical boundaries: it provides immediate digital coordination and step-by-step guidance, without falsely pretending to substitute for municipal 911/112 emergency services.
+      </p>
+
+      <div class="disclaimer-banner" style="margin-top: 24px;">
+        <p><strong>Official Notice:</strong> {{ disclaimer_text }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

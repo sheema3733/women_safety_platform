@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Profile | Women Safety Platform{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 650px;">
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title">Personal Profile & Settings</h1>
+    </div>
+    <div class="card-body">
+      <form action="{{ url_for('user.profile') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+          <label class="form-label" for="email">Account Email (Verified)</label>
+          <input type="email" id="email" class="form-control" value="{{ user.email }}" disabled style="background: #f8f6f8;">
+          <span class="form-hint">Email is tied to your account authentication and cannot be edited directly.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="full_name">Full Name</label>
+          <input type="text" id="full_name" name="full_name" class="form-control" value="{{ user.full_name }}" required>
+          {% if errors.full_name %}
+            <span class="form-error">{{ errors.full_name }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone">Primary Phone Number</label>
+          <input type="tel" id="phone" name="phone" class="form-control" value="{{ user.phone or '' }}" placeholder="+1 555-0199">
+          <span class="form-hint">Used for emergency identification and coordination.</span>
+          {% if errors.phone %}
+            <span class="form-error">{{ errors.phone }}</span>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="city">City / General Area</label>
+          <input type="text" id="city" name="city" class="form-control" value="{{ user.city or '' }}" placeholder="e.g. Metro Area">
+          <span class="form-hint">Enables localized emergency safe havens and resource filtering.</span>
+          {% if errors.city %}
+            <span class="form-error">{{ errors.city }}</span>
+          {% endif %}
+        </div>
+
+        <div style="margin-top: 20px; padding: 14px; background: var(--color-cream); border-radius: var(--radius-sm); border: 1px solid var(--color-border); font-size: 13px;">
+          <div><strong>Account Status:</strong> <span style="color: var(--color-forest-mint); font-weight: 700;">Active</span></div>
+          <div style="margin-top: 4px;"><strong>Member Since:</strong> {{ user.created_at.strftime('%B %d, %Y') }}</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="margin-top: 24px;">Save Changes</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

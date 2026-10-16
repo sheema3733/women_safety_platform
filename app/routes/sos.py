@@ -39,10 +39,12 @@ def trigger():
     address_note = request.form.get("address_note", "").strip()
     emergency_notes = request.form.get("emergency_notes", "").strip()
 
+    from app.validators.forms import validate_coordinates
     lat = request.form.get("latitude")
     lng = request.form.get("longitude")
-    latitude = float(lat) if lat and lat.strip() else None
-    longitude = float(lng) if lng and lng.strip() else None
+    latitude, longitude, coord_err = validate_coordinates(lat, lng, required=False)
+    if coord_err:
+        flash(f"Location notice: {coord_err}. Proceeding with emergency trigger.", "warning")
 
     ip_address = request.remote_addr or ""
 

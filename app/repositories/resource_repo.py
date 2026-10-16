@@ -132,3 +132,40 @@ class ResourceRepository:
             "total_resources": total,
             "active_resources": active
         }
+
+    @staticmethod
+    def get_nearby_resources(
+        latitude: float,
+        longitude: float,
+        radius_km: float = 10.0,
+        category: str = "",
+        city: str = "",
+        limit: int = 20
+    ) -> List[Tuple[EmergencyResource, float]]:
+        import math
+        def haversine(lat1, lon1, lat2, lon2):
+            r = 6371.0
+            dlat = math.radians(lat2 - lat1)
+            dlon = math.radians(lon2 - lon1)
+            a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
+            return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+        stmt = select(EmergencyResource).where(
+            EmergencyResource.is_active.is_(True),
+            EmergencyResource.latitude.is_not(None),
+            EmergencyResource.longitude.is_not(None)
+        )
+        if category:
+            stmt = stmt.where(EmergencyResource.category == category)
+        if city:
+            stmt = stmt.where(func.lower(EmergencyResource.city) == city.strip().lower())
+
+        candidates = list(db_session.execute(stmt).scalars().all())
+        results = []
+        for r in candidates:
+            dist = haversine(latitude, longitude, r.latitude, r.longitude)
+            if dist <= radius_km:
+                results.append((r, round(dist, 2)))
+
+        results.sort(key=lambda x: x[1])
+        return results[:limit]

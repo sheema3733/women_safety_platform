@@ -20,6 +20,97 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 6000);
   });
 
+  // Show/Hide Password Toggle
+  document.querySelectorAll(".btn-toggle-password").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.getAttribute("data-toggle-target");
+      const input = document.getElementById(targetId);
+      if (input) {
+        if (input.type === "password") {
+          input.type = "text";
+          btn.textContent = "🙈";
+          btn.setAttribute("aria-label", "Hide password");
+        } else {
+          input.type = "password";
+          btn.textContent = "👁️";
+          btn.setAttribute("aria-label", "Show password");
+        }
+      }
+    });
+  });
+
+  // Registration Live Password Policy & Strength Meter
+  const regPassword = document.getElementById("password");
+  const regConfirm = document.getElementById("confirm_password");
+  const strengthFill = document.getElementById("strength-fill");
+  const ruleLength = document.getElementById("rule-length");
+  const ruleUpper = document.getElementById("rule-upper");
+  const ruleLower = document.getElementById("rule-lower");
+  const ruleNumber = document.getElementById("rule-number");
+  const matchStatus = document.getElementById("confirm-match-status");
+
+  if (regPassword && strengthFill) {
+    const updateStrength = () => {
+      const val = regPassword.value || "";
+      const hasLength = val.length >= 8;
+      const hasUpper = /[A-Z]/.test(val);
+      const hasLower = /[a-z]/.test(val);
+      const hasNum = /[0-9]/.test(val);
+
+      if (ruleLength) {
+        ruleLength.textContent = hasLength ? "✓ Min 8 chars" : "✗ Min 8 chars";
+        ruleLength.classList.toggle("valid", hasLength);
+      }
+      if (ruleUpper) {
+        ruleUpper.textContent = hasUpper ? "✓ Uppercase" : "✗ Uppercase";
+        ruleUpper.classList.toggle("valid", hasUpper);
+      }
+      if (ruleLower) {
+        ruleLower.textContent = hasLower ? "✓ Lowercase" : "✗ Lowercase";
+        ruleLower.classList.toggle("valid", hasLower);
+      }
+      if (ruleNumber) {
+        ruleNumber.textContent = hasNum ? "✓ Number" : "✗ Number";
+        ruleNumber.classList.toggle("valid", hasNum);
+      }
+
+      const score = [hasLength, hasUpper, hasLower, hasNum].filter(Boolean).length;
+      strengthFill.className = "strength-fill";
+      if (score === 1) strengthFill.classList.add("weak");
+      else if (score === 2) strengthFill.classList.add("fair");
+      else if (score === 3) strengthFill.classList.add("good");
+      else if (score === 4) strengthFill.classList.add("strong");
+    };
+
+    regPassword.addEventListener("input", updateStrength);
+    // Initialize if prefilled
+    if (regPassword.value) updateStrength();
+  }
+
+  if (regConfirm && regPassword && matchStatus) {
+    const checkMatch = () => {
+      if (!regConfirm.value) {
+        matchStatus.style.display = "none";
+        regConfirm.classList.remove("is-valid", "is-invalid");
+        return;
+      }
+      matchStatus.style.display = "block";
+      if (regPassword.value === regConfirm.value) {
+        matchStatus.textContent = "✓ Passwords match";
+        matchStatus.style.color = "var(--color-forest-mint)";
+        regConfirm.classList.add("is-valid");
+        regConfirm.classList.remove("is-invalid");
+      } else {
+        matchStatus.textContent = "✗ Passwords do not match";
+        matchStatus.style.color = "var(--color-muted-coral)";
+        regConfirm.classList.add("is-invalid");
+        regConfirm.classList.remove("is-valid");
+      }
+    };
+    regConfirm.addEventListener("input", checkMatch);
+    regPassword.addEventListener("input", checkMatch);
+  }
+
   // Modal Open/Close Event Handlers
   document.querySelectorAll("[data-modal-target]").forEach(btn => {
     btn.addEventListener("click", (e) => {
@@ -41,6 +132,15 @@ document.addEventListener("DOMContentLoaded", () => {
     backdrop.addEventListener("click", (e) => {
       if (e.target === backdrop) backdrop.classList.remove("open");
     });
+  });
+
+  // Close modal with Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".modal-backdrop.open").forEach(modal => {
+        modal.classList.remove("open");
+      });
+    }
   });
 });
 

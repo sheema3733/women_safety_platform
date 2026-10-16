@@ -22,51 +22,67 @@
 
         <div class="form-group">
           <label class="form-label" for="full_name">Full Name</label>
-          <input type="text" id="full_name" name="full_name" class="form-control" value="{{ form_data.full_name or '' }}" required autofocus>
+          <input type="text" id="full_name" name="full_name" class="form-control {% if errors.full_name %}is-invalid{% endif %}" value="{{ form_data.full_name or '' }}" required autofocus {% if errors.full_name %}aria-describedby="full_name-error" aria-invalid="true"{% endif %}>
           {% if errors.full_name %}
-            <span class="form-error">{{ errors.full_name }}</span>
+            <span class="form-error" id="full_name-error">{{ errors.full_name }}</span>
           {% endif %}
         </div>
 
         <div class="form-group">
           <label class="form-label" for="email">Email Address</label>
-          <input type="email" id="email" name="email" class="form-control" value="{{ form_data.email or '' }}" required autocomplete="email">
+          <input type="email" id="email" name="email" class="form-control {% if errors.email %}is-invalid{% endif %}" value="{{ form_data.email or '' }}" required autocomplete="email" {% if errors.email %}aria-describedby="email-error" aria-invalid="true"{% endif %}>
           {% if errors.email %}
-            <span class="form-error">{{ errors.email }}</span>
+            <span class="form-error" id="email-error">{{ errors.email }}</span>
           {% endif %}
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
           <div class="form-group">
             <label class="form-label" for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" class="form-control" value="{{ form_data.phone or '' }}" placeholder="+1 555-0199">
+            <input type="tel" id="phone" name="phone" class="form-control {% if errors.phone %}is-invalid{% endif %}" value="{{ form_data.phone or '' }}" placeholder="+1 555-0199" {% if errors.phone %}aria-describedby="phone-error" aria-invalid="true"{% endif %}>
             {% if errors.phone %}
-              <span class="form-error">{{ errors.phone }}</span>
+              <span class="form-error" id="phone-error">{{ errors.phone }}</span>
             {% endif %}
           </div>
           <div class="form-group">
             <label class="form-label" for="city">City / Area</label>
-            <input type="text" id="city" name="city" class="form-control" value="{{ form_data.city or '' }}" placeholder="e.g. Metro Area">
+            <input type="text" id="city" name="city" class="form-control {% if errors.city %}is-invalid{% endif %}" value="{{ form_data.city or '' }}" placeholder="e.g. Metro Area" {% if errors.city %}aria-describedby="city-error" aria-invalid="true"{% endif %}>
             {% if errors.city %}
-              <span class="form-error">{{ errors.city }}</span>
+              <span class="form-error" id="city-error">{{ errors.city }}</span>
             {% endif %}
           </div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="password">Password</label>
-          <input type="password" id="password" name="password" class="form-control" required autocomplete="new-password">
-          <span class="form-hint">At least 8 characters with uppercase, lowercase, and numbers.</span>
+          <div class="password-input-wrapper">
+            <input type="password" id="password" name="password" class="form-control {% if errors.password %}is-invalid{% endif %}" required autocomplete="new-password" aria-describedby="password-hint {% if errors.password %}password-error{% endif %}" {% if errors.password %}aria-invalid="true"{% endif %}>
+            <button type="button" class="btn-toggle-password" aria-label="Show password" data-toggle-target="password" title="Show or hide password">👁️</button>
+          </div>
+          <span class="form-hint" id="password-hint">At least 8 characters with uppercase, lowercase, and numbers.</span>
+          <div class="password-strength-meter" id="password-strength-container" aria-live="polite">
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <div class="strength-checklist" id="strength-checklist">
+              <span class="rule-item" id="rule-length">✗ Min 8 chars</span>
+              <span class="rule-item" id="rule-upper">✗ Uppercase</span>
+              <span class="rule-item" id="rule-lower">✗ Lowercase</span>
+              <span class="rule-item" id="rule-number">✗ Number</span>
+            </div>
+          </div>
           {% if errors.password %}
-            <span class="form-error">{{ errors.password }}</span>
+            <span class="form-error" id="password-error">{{ errors.password }}</span>
           {% endif %}
         </div>
 
         <div class="form-group">
           <label class="form-label" for="confirm_password">Confirm Password</label>
-          <input type="password" id="confirm_password" name="confirm_password" class="form-control" required autocomplete="new-password">
+          <div class="password-input-wrapper">
+            <input type="password" id="confirm_password" name="confirm_password" class="form-control {% if errors.confirm_password %}is-invalid{% endif %}" required autocomplete="new-password" aria-describedby="confirm-match-status {% if errors.confirm_password %}confirm_password-error{% endif %}" {% if errors.confirm_password %}aria-invalid="true"{% endif %}>
+            <button type="button" class="btn-toggle-password" aria-label="Show confirm password" data-toggle-target="confirm_password" title="Show or hide password">👁️</button>
+          </div>
+          <span class="form-hint" id="confirm-match-status" style="display: none; font-weight: 600;"></span>
           {% if errors.confirm_password %}
-            <span class="form-error">{{ errors.confirm_password }}</span>
+            <span class="form-error" id="confirm_password-error">{{ errors.confirm_password }}</span>
           {% endif %}
         </div>
 
